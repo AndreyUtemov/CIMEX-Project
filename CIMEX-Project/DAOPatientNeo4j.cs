@@ -1,63 +1,64 @@
-using System.Net.Http;
-using System.Text;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
+using Neo4j.Driver;
 
 namespace CIMEX_Project;
 
-public class DAOPatientNeo4j : DAOPatientManagement
+public class DAOPatientNeo4j : DAOPatient
 {
-    private readonly HttpClient _httpClient;
-    private DAOPatientManagement _daoPatientManagementImplementation;
+    private readonly Neo4jClient _neo4jClient;
+    private DAOPatient _daoPatientImplementation;
+
+    public DAOPatientNeo4j(Neo4jClient neo4jClient) // Внедряем зависимость
+    {
+        _neo4jClient = neo4jClient;
+    }
 
     public DAOPatientNeo4j()
     {
-        _httpClient = new HttpClient();
     }
-
 
     public async Task<List<Patient>> GetAllPatients(TeamMember user)
     {
+        await _neo4jClient.Connect();
+        await using var session = _neo4jClient.GetDriver().AsyncSession(); // Используем AsyncSession()
+        var patients = new List<Patient>();
         try
         {
-            var url = "http://localhost:5000/api/restapipatientmanagementneo4j";
-        
-            // Сериализация объекта user в JSON
-            if (user != null)
+            var result = await session.RunAsync
+            ("MATCH (p:Patient)-[r:PARTICIPATES_IN]->(s:Study)-[c2]-(t:TeamMember)" +
+             "WHERE t.email = \"$teamMemberEmail\" RETURN p.name AS name, p.surname AS surname, p.patientId AS patientId, p.nextVisit AS nextVisit," +
+             "p.nextScheduledVisit AS nextScheduledVisit, r.included AS isIncluded, s.name AS studyName",
+                new { teamMemberEmail = user.Email });
+           
+            await result.ForEachAsync(record =>
             {
-                var jsonContent = new StringContent(JsonSerializer.Serialize(user), Encoding.UTF8, "application/json");
+                var name = record["name"].As<string>();
+                var surname = record["surname"].As<string>();
+                var patientId = record["patientId"].As<string>();
+                var nextVisit = record["nextVisit"].As<DateTime>();
+                var nextScheduledVisit = record["nextScheduledVisit"].As<DateTime>();
+                var isIncluded = record["isIncluded"].As<bool>();
+                var studyName = record["studyName"].As<string>();
 
-                // Отправка POST-запроса с телом
-                var response = await _httpClient.PostAsync(url, jsonContent);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    // Десериализация ответа в список пациентов
-                    var content = await response.Content.ReadAsStringAsync();
-                    var patientList = JsonSerializer.Deserialize<List<Patient>>(content);
-
-                    return patientList;
-                }
-                else
-                {
-                    // Обработка ошибки, если запрос не успешен
-                    Console.WriteLine($"Error: {response.StatusCode}");
-                    return null;
-                }
-            }
+                var patient = new Patient(
+                    name, surname, patientId, isIncluded, studyName, nextVisit, nextScheduledVisit
+                );
+                patients.Add(patient);
+            });
+            
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
-            throw;
+            Console.WriteLine($"Error fetching studies: {e.Message}");
         }
+        finally
+        {
+            await _neo4jClient.Disconnect();
+        }
+
+        return patients;
     }
 
-
-    public Task<IActionResult> GetAllPatients()
-    {
-        return _daoPatientManagementImplementation.GetAllPatients();
-    }
 
     public Task<IActionResult> GetAllPatientsInStudy(Study study)
     {

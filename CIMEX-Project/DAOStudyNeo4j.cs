@@ -1,12 +1,51 @@
 using Microsoft.AspNetCore.Mvc;
+using Neo4j.Driver;
 
 namespace CIMEX_Project;
 
 public class DAOStudyNeo4j : DAOStudy
 {
-    public Task<IActionResult> GetAllStudy()
+    private readonly Neo4jClient _neo4jClient;
+
+    public DAOStudyNeo4j(Neo4jClient neo4jClient) // Внедряем зависимость
     {
-        throw new NotImplementedException();
+        _neo4jClient = neo4jClient;
+    }
+
+    public DAOStudyNeo4j()
+    {
+    }
+
+    public async Task<List<Study>> GetAllStudy(TeamMember user)
+    {
+        await _neo4jClient.Connect();
+        await using var session = _neo4jClient.GetDriver().AsyncSession(); // Используем AsyncSession()
+        var studies = new List<Study>();
+
+        try
+        {
+            var result = await session.RunAsync("MATCH (s:Study)-[]-(p:Team_member) WHERE p.eMail = \"$teamMemberName\"" +
+                                                " RETURN s.name AS studyName, s.fullname AS fullName", new {teamMemberEmail = user.Email});
+            await result.ForEachAsync(record =>
+            {
+                var studyName = record["studyName"].As<string>();
+                var fullName = record["fullName"].As<string>();
+
+                Study study = new Study(studyName, fullName);
+                
+                studies.Add(study);
+            });
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Error fetching studies: {e.Message}");
+        }
+        finally
+        {
+            await _neo4jClient.Disconnect();
+        }
+
+        return studies;
     }
 
     public Task<IActionResult> CreateStudy(Study study)
@@ -24,4 +63,3 @@ public class DAOStudyNeo4j : DAOStudy
         throw new NotImplementedException();
     }
 }
-

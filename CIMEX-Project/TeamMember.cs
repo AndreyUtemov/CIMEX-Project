@@ -2,7 +2,7 @@ using System.Reflection.Metadata;
 
 namespace CIMEX_Project;
 
-public abstract class TeamMember : Person
+public class TeamMember : Person
 {
     public string Email { get; private set; }
     
@@ -16,22 +16,45 @@ public abstract class TeamMember : Person
     }
 
 
-    public abstract void AddNewPatient();
+    public void AddNewPatient()
+    {
+        throw new NotImplementedException();
+    }
 
-    public abstract List<Patient> GetAllPatints();
+    
+    public  List<Patient> GetAllPatints()
+    {
+        throw new NotImplementedException();
+    }
 
-    public abstract Patient GetPatient();
+    public  Patient GetPatient()
+    {
+        throw new NotImplementedException();
+    }
 
-    public abstract List<TeamMember> GetTeamList();
+    public  List<TeamMember> GetTeamList()
+    {
+        throw new NotImplementedException();
+    }
 
-    public abstract List<Study> GetStudyList();
+    public  List<Study> GetStudyList()
+    {
+        throw new NotImplementedException();
+    }
 
-    public abstract Study GetStudy();
+    public  Study GetStudy()
+    {
+        throw new NotImplementedException();
+    }
 
-    public abstract void SetVisit();
+    public void SetVisit()
+    {
+        throw new NotImplementedException();
+    }
 
-  
 
-    public abstract void SignDocument();
-
+    public  void SignDocument()
+    {
+        throw new NotImplementedException();
+    }
 }

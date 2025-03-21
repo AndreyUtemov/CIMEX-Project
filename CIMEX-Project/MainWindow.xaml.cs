@@ -1,13 +1,7 @@
-﻿using System.Text;
+﻿
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+
 
 
 namespace CIMEX_Project;
@@ -49,8 +43,10 @@ public partial class MainWindow : Window
 
         foreach (Button button in upperButtons)
         {
-            button.Click += (sender, e) => Button_Click(sender, e);
+            button.Click -= Button_Click; // Удаляем старый обработчик, если он был
+            button.Click += Button_Click; // Добавляем обработчик
             UpperPanel.Children.Add(button);
+            
         }
     }
 
@@ -82,7 +78,7 @@ public partial class MainWindow : Window
         }
     }
 
-    private void Button_Click(object sender, RoutedEventArgs e, string trail)
+    private void Button_Click(object sender, RoutedEventArgs e)
     {
     }
 }

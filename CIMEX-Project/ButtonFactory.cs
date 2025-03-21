@@ -25,7 +25,7 @@ public class ButtonFactory
             {
                 button.Foreground = new SolidColorBrush(Colors.OrangeRed);
             }
-
+            
             buttonList.Add(button);
         }
 

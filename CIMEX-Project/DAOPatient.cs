@@ -2,9 +2,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CIMEX_Project;
 
-public interface DAOPatientManagement
+public interface DAOPatient
 {
-   Task<IActionResult> GetAllPatients();
+   Task<List<Patient>> GetAllPatients(TeamMember user);
 
    Task<IActionResult> GetAllPatientsInStudy([FromBody] Study study);
 

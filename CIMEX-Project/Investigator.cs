@@ -17,44 +17,44 @@ public class Investigator : TeamMember
     }
         
         
-    public override void AddNewPatient()
+    public  void AddNewPatient()
     {
         throw new NotImplementedException();
     }
 
-    public override List<Patient> GetAllPatints()
+    public  List<Patient> GetAllPatints()
     {
         throw new NotImplementedException();
     }
 
-    public override Patient GetPatient()
+    public  Patient GetPatient()
     {
         throw new NotImplementedException();
     }
 
-    public override List<TeamMember> GetTeamList()
+    public  List<TeamMember> GetTeamList()
     {
         throw new NotImplementedException();
     }
 
-    public override Study GetStudy()
-    {
-        throw new NotImplementedException();
-    }
-    
-
-    public override List<Study> GetStudyList()
-    {
-        throw new NotImplementedException();
-    }
-
-    public override void SetVisit()
+    public  Study GetStudy()
     {
         throw new NotImplementedException();
     }
     
 
-    public override void SignDocument()
+    public List<Study> GetStudyList()
+    {
+        throw new NotImplementedException();
+    }
+
+    public void SetVisit()
+    {
+        throw new NotImplementedException();
+    }
+    
+
+    public  void SignDocument()
     {
         throw new NotImplementedException();
     }

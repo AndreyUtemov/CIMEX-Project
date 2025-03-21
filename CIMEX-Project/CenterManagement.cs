@@ -10,18 +10,32 @@ public class CenterManagement
     private static List<Study> studyList;
     private static Study actualStudy = null;
     private static bool isMainWindow;
-    private static DAOInvestigatorNeo4j _daoInvestigatorNeo4J= new DAOInvestigatorNeo4j();
     private static DAOPatientNeo4j _daoPatientNeo4J= new DAOPatientNeo4j();
     private static DAOStudyNeo4j _daoStudyNeo4J = new DAOStudyNeo4j();
+    private static List<Patient> includedPatients = new List<Patient>();
+    private static List<Patient> screenedPatients = new List<Patient>();
     
 
 
-    public void ProgrammStart(string eMail)
+    public async void ProgrammStart(string eMail)
     {
-        user = _daoInvestigatorNeo4J.GetInvestigator(eMail);
+        // user = _daoInvestigatorNeo4J.GetInvestigator(eMail);
         isMainWindow = true;
         studyList = user.GetStudyList();
-        List<Patient> allPatientsList = _daoPatientNeo4J.GetAllPatients(user);
+        studyList = await _daoStudyNeo4J.GetAllStudy(user);
+        List<Patient> allPatientsList = await _daoPatientNeo4J.GetAllPatients(user);
+
+        foreach (Patient patient in allPatientsList)
+        {
+            if (patient.Included)
+            {
+                includedPatients.Add(patient);
+            }
+            else
+            {
+                screenedPatients.Add(patient);
+            }
+        }
     }
 
     public List<Button> CreateUpperRowButtons()
@@ -32,16 +46,34 @@ public class CenterManagement
 
     public List<Button> CreateMiddleRowButtons()
     {
-        List<Button> buttonList = _buttonFactory.CreatePatientButtons(patienteList);
+        List<Button> buttonList = _buttonFactory.CreatePatientButtons(includedPatients, 0);
 
         return buttonList;
     }
 
     public List<Button> CreateBottomRowButtons()
     {
-        List<Button> buttonList = _buttonFactory.CreatePatientButtons(patienteList);
+        List<Button> buttonList = _buttonFactory.CreatePatientButtons(screenedPatients, 2);
 
         return buttonList;
     }
+
+    public string GetLeftTitle()
+    {
+        return user.Name + " " + user.Surname;
+    }
+
+    public string GetRightTitle()
+    {
+        if (isMainWindow)
+        {
+            return "";
+        }
+        else
+        {
+            return actualStudy.StudyName + "\n" + actualStudy.FullName;
+        }
+    }
+    
     
 }

@@ -21,47 +21,47 @@ public class PrimaryInvestigator : Investigator
         
     }
 
-    public override void AddNewPatient()
+    public  void AddNewPatient()
     {
         base.AddNewPatient();
     }
 
-    public override List<Patient> GetAllPatints()
+    public List<Patient> GetAllPatints()
     {
         return base.GetAllPatints();
     }
 
-    public override Patient GetPatient()
+    public  Patient GetPatient()
     {
         return base.GetPatient();
     }
 
-    public override List<TeamMember> GetTeamList()
+    public  List<TeamMember> GetTeamList()
     {
         return base.GetTeamList();
     }
     
 
-    public override Study GetStudy()
+    public  Study GetStudy()
     {
         return base.GetStudy();
     }
 
 
 
-    public override List<Study> GetStudyList()
+    public  List<Study> GetStudyList()
     {
         return base.GetStudyList();
     }
 
-    public override void SetVisit()
+    public  void SetVisit()
     {
         base.SetVisit();
     }
 
  
 
-    public override void SignDocument()
+    public  void SignDocument()
     {
         base.SignDocument();
     }
