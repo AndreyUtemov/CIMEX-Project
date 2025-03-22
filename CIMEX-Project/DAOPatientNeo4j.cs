@@ -25,9 +25,9 @@ public class DAOPatientNeo4j : DAOPatient
         try
         {
             var result = await session.RunAsync
-            ("MATCH (p:Patient)-[r:PARTICIPATES_IN]->(s:Study)-[c2]-(t:TeamMember)" +
-             "WHERE t.email = \"$teamMemberEmail\" RETURN p.name AS name, p.surname AS surname, p.patientId AS patientId, p.nextVisit AS nextVisit," +
-             "p.nextScheduledVisit AS nextScheduledVisit, r.included AS isIncluded, s.name AS studyName",
+            ("MATCH (p:Patient)-[r:PARTICIPATES]->(s:Study)-[c2]-(t)" +
+             "WHERE t.email = $teamMemberEmail RETURN p.name AS name, p.surname AS surname, p.patientId AS patientId, p.nextVisit AS nextVisit," +
+             " p.window AS window, r.included AS isIncluded, s.name AS studyName",
                 new { teamMemberEmail = user.Email });
            
             await result.ForEachAsync(record =>
@@ -36,12 +36,14 @@ public class DAOPatientNeo4j : DAOPatient
                 var surname = record["surname"].As<string>();
                 var patientId = record["patientId"].As<string>();
                 var nextVisit = record["nextVisit"].As<DateTime>();
-                var nextScheduledVisit = record["nextScheduledVisit"].As<DateTime>();
+                var nextScheduledVisit = record["nextVisit"].As<DateTime>();
+                // var nextScheduledVisit = record["nextScheduledVisit"].As<DateTime>();
                 var isIncluded = record["isIncluded"].As<bool>();
                 var studyName = record["studyName"].As<string>();
+                var window = record["window"].As<int>();
 
                 var patient = new Patient(
-                    name, surname, patientId, isIncluded, studyName, nextVisit, nextScheduledVisit
+                    name, surname, patientId, isIncluded, studyName, nextVisit, nextScheduledVisit, window
                 );
                 patients.Add(patient);
             });
@@ -50,10 +52,6 @@ public class DAOPatientNeo4j : DAOPatient
         catch (Exception e)
         {
             Console.WriteLine($"Error fetching studies: {e.Message}");
-        }
-        finally
-        {
-            await _neo4jClient.Disconnect();
         }
 
         return patients;

@@ -9,7 +9,7 @@ public class TeamMember : Person
     public string Role { get; private set; }
 
 
-    protected TeamMember(string name, string surname, string email, string role) : base(name, surname)
+    public TeamMember(string name, string surname, string email, string role) : base(name, surname)
     {
         Email = email;
         Role = role;

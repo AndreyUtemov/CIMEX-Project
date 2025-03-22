@@ -13,19 +13,18 @@ public class ButtonFactory
 
         foreach (Patient patient in patientList)
         {
-            string visitdate = CreateDateString(patient.NextSheduledVisit, visitWindow);
+            string visitdate = CreateDateString(patient.NextScheduledVisit, visitWindow);
             var button = new Button()
             {
-                Content = $"{patient.PatientId}\n{patient.Name}\n\n{visitdate}",
+                Content = $"{patient.Surname}\n{patient.Name}\n\n{visitdate}",
                 Style = (Style)Application.Current.Resources["Big_Button"],
-                Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#01B0FF")),
                 Tag = patient.PatientId
             };
-            if (DateTime.Now > patient.NextSheduledVisit)
+            if (DateTime.Now > patient.NextScheduledVisit)
             {
                 button.Foreground = new SolidColorBrush(Colors.OrangeRed);
             }
-            
+
             buttonList.Add(button);
         }
 
@@ -42,13 +41,14 @@ public class ButtonFactory
             {
                 Content = $"{study.StudyName}\n{study.FullName}",
                 Style = (Style)Application.Current.Resources["Small_Button"],
-                Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0085D4")),
+                Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0E239A")),
                 Tag = study.StudyName
             };
             if (study.NeedAtention)
             {
                 button.Foreground = new SolidColorBrush(Colors.OrangeRed);
             }
+
             buttonList.Add(button);
         }
 
@@ -59,12 +59,12 @@ public class ButtonFactory
     {
         if (window == 0)
         {
-            return "Visit date\n" + date.ToString("dd.mm.yyyy");
+            return "Visit date\n" + date.ToString("dd.MM.yyyy");
         }
         else
         {
-            return "Visit date\n" + date.AddDays(window).ToString("dd.mm.yyyy") + "\n" +
-                   date.AddDays(-1 * window).ToString("dd.mm.yyyy");
+            return "Visit date\n" + date.AddDays(window).ToString("dd.MM.yyyy") + "\n" +
+                   date.AddDays(-1 * window).ToString("dd.MM.yyyy");
         }
     }
 }

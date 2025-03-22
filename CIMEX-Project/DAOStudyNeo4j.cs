@@ -24,7 +24,7 @@ public class DAOStudyNeo4j : DAOStudy
 
         try
         {
-            var result = await session.RunAsync("MATCH (s:Study)-[]-(p:Team_member) WHERE p.eMail = \"$teamMemberName\"" +
+            var result = await session.RunAsync("MATCH (s:Study)-[n]-(p) WHERE p.email = $teamMemberEmail" +
                                                 " RETURN s.name AS studyName, s.fullname AS fullName", new {teamMemberEmail = user.Email});
             await result.ForEachAsync(record =>
             {
@@ -39,10 +39,6 @@ public class DAOStudyNeo4j : DAOStudy
         catch (Exception e)
         {
             Console.WriteLine($"Error fetching studies: {e.Message}");
-        }
-        finally
-        {
-            await _neo4jClient.Disconnect();
         }
 
         return studies;

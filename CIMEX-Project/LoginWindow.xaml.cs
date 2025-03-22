@@ -4,20 +4,20 @@ namespace CIMEX_Project;
 
 public partial class LoginWindow : Window
 {
-    public static string secretUserLogin = "admin";
-    public static string secretPassword = "1234";
+    public static string secretUserLogin = "a";
+    public static string secretPassword = "a";
 
     public LoginWindow()
     {
         InitializeComponent();
     }
 
-    private void LoginButtonClick(object sender, RoutedEventArgs e)
+    private async void LoginButtonClick(object sender, RoutedEventArgs e)
     {
         string userLogin = LoginBox.Text;
         string password = PasswordBox.Password;
 
-        if (userLogin == secretUserLogin&& password == secretPassword)
+        if (userLogin == secretUserLogin && password == secretPassword)
         {
             MainWindow mainWindow = new MainWindow();
             mainWindow.Show();
