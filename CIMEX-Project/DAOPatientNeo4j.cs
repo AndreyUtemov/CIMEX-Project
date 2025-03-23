@@ -36,14 +36,12 @@ public class DAOPatientNeo4j : DAOPatient
                 var surname = record["surname"].As<string>();
                 var patientId = record["patientId"].As<string>();
                 var nextVisit = record["nextVisit"].As<DateTime>();
-                var nextScheduledVisit = record["nextVisit"].As<DateTime>();
-                // var nextScheduledVisit = record["nextScheduledVisit"].As<DateTime>();
                 var isIncluded = record["isIncluded"].As<bool>();
                 var studyName = record["studyName"].As<string>();
                 var window = record["window"].As<int>();
 
                 var patient = new Patient(
-                    name, surname, patientId, isIncluded, studyName, nextVisit, nextScheduledVisit, window
+                    name, surname, patientId, isIncluded, studyName, nextVisit,  window
                 );
                 patients.Add(patient);
             });
@@ -60,6 +58,7 @@ public class DAOPatientNeo4j : DAOPatient
 
     public Task<IActionResult> GetAllPatientsInStudy(Study study)
     {
+        // MATCH (p:Patient)-[r]-(s:Study) WHERE s.name = "ACTIVE" RETURN p
         throw new NotImplementedException();
     }
 

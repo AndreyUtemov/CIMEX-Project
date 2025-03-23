@@ -4,12 +4,12 @@ using System.Windows.Documents;
 
 namespace CIMEX_Project;
 
-public class CenterManagement
+public class MainWindowManagement
 {
     private static ButtonFactory _buttonFactory = new ButtonFactory();
     private static TeamMember user = new TeamMember("Admin", "Admin", "admin@cimex.at", "Admin");
     private static List<Study> studyList;
-    private static Study actualStudy = null;
+    private static Study actualStudy;
     private static bool isMainWindow = true;
     private static readonly Neo4jClient _neo4jClient = Neo4jClient.Instance; // Используем singleton
     private static DAOPatientNeo4j _daoPatientNeo4J = new DAOPatientNeo4j(_neo4jClient);
@@ -27,18 +27,8 @@ public class CenterManagement
       
         studyList = await _daoStudyNeo4J.GetAllStudy(user);
         List<Patient> allPatientsList = await _daoPatientNeo4J.GetAllPatients(user);
-
-        foreach (Patient patient in allPatientsList)
-        {
-            if (patient.Included)
-            {
-                includedPatients.Add(patient);
-            }
-            else
-            {
-                screenedPatients.Add(patient);
-            }
-        }
+        separatePreScreenedPatients(allPatientsList);
+        
     }
 
     public async Task<List<Button>> CreateUpperRowButtons()
@@ -78,6 +68,28 @@ public class CenterManagement
             return actualStudy.StudyName + "\n" + actualStudy.FullName;
         }
     }
-    
-    
+    public async Task SetStudyWindow(Study study)
+    {
+        isMainWindow = false;
+        actualStudy = study;
+        user = await _daoTeamMemberNeo4J.getUserByStudy(user, actualStudy);
+        List<Patient> studyPatients = await _daoPatientNeo4J.GetAllPatientsInStudy(study);
+        separatePreScreenedPatients(studyPatients);
+        
+    }
+
+    private void separatePreScreenedPatients(List<Patient> allPatientsList)
+    {
+        foreach (Patient patient in allPatientsList)
+        {
+            if (patient.Included)
+            {
+                includedPatients.Add(patient);
+            }
+            else
+            {
+                screenedPatients.Add(patient);
+            }
+        }
+    }
 }

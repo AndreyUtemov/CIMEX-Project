@@ -1,6 +1,5 @@
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Media;
 
 namespace CIMEX_Project;
@@ -13,14 +12,14 @@ public class ButtonFactory
 
         foreach (Patient patient in patientList)
         {
-            string visitdate = CreateDateString(patient.NextScheduledVisit, visitWindow);
+            string visitDate = CreateDateString(patient.NextVisit, visitWindow);
             var button = new Button()
             {
-                Content = $"{patient.Surname}\n{patient.Name}\n\n{visitdate}",
+                Content = $"{patient.Surname}\n{patient.Name}\n\n{visitDate}",
                 Style = (Style)Application.Current.Resources["Big_Button"],
-                Tag = patient.PatientId
+                Tag = patient
             };
-            if (DateTime.Now > patient.NextScheduledVisit)
+            if (DateTime.Now > patient.NextVisit)
             {
                 button.Foreground = new SolidColorBrush(Colors.OrangeRed);
             }
@@ -42,7 +41,7 @@ public class ButtonFactory
                 Content = $"{study.StudyName}\n{study.FullName}",
                 Style = (Style)Application.Current.Resources["Small_Button"],
                 Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0E239A")),
-                Tag = study.StudyName
+                Tag = study
             };
             if (study.NeedAtention)
             {

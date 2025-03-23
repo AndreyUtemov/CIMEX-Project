@@ -11,7 +11,7 @@ namespace CIMEX_Project;
 /// </summary>
 public partial class MainWindow : Window
 {
-    private static CenterManagement _centerManagement = new CenterManagement();
+    private static MainWindowManagement _mainWindowManagement = new MainWindowManagement();
 
     public MainWindow()
     {
@@ -23,17 +23,17 @@ public partial class MainWindow : Window
     {
         try
         {
-            await _centerManagement.ProgrammStart("admin@cimex.at"); // Загружаем данные
+            await _mainWindowManagement.ProgrammStart("admin@cimex.at"); // Загружаем данные
 
             DataContext = new MainViewModel
             {
                 Date = DateTime.Now.ToString("dd MMMM yyyy"),
-                LeftTitle = _centerManagement.GetLeftTitle(),
-                RightTitle = _centerManagement.GetRightTitle()
+                LeftTitle = _mainWindowManagement.GetLeftTitle(),
+                RightTitle = _mainWindowManagement.GetRightTitle()
             };
-           await AddUpperButtons(_centerManagement.CreateUpperRowButtons());
-            AddMiddleButtons(_centerManagement.CreateMiddleRowButtons());
-            AddBottomButtons(_centerManagement.CreateBottomRowButtons());
+           await AddUpperButtons(_mainWindowManagement.CreateUpperRowButtons());
+            AddMiddleButtons(_mainWindowManagement.CreateMiddleRowButtons());
+            AddBottomButtons(_mainWindowManagement.CreateBottomRowButtons());
         }
         catch (Exception e)
         {
@@ -54,8 +54,8 @@ public partial class MainWindow : Window
         List<Button> buttons = await upperButtons; // Дожидаемся результата
         foreach (Button button in buttons) // Теперь итерируемся по List<Button>
         {
-            button.Click -= Button_Click;
-            button.Click += Button_Click;
+            button.Click -= Study_Button_Click;
+            button.Click += Study_Button_Click;
             UpperPanel.Children.Add(button);
         }
     }
@@ -68,7 +68,7 @@ public partial class MainWindow : Window
         {
             button.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#01B0FF"));
             MiddlePanel.Children.Add(button);
-            button.Click += (sender, e) => Button_Click(sender, e);
+            button.Click += (sender, e) => Patient_Button_Click(sender, e);
         }
     }
 
@@ -80,12 +80,22 @@ public partial class MainWindow : Window
         {
             button.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0085D4"));
             BottomPanel.Children.Add(button);
-            button.Click += (sender, e) => Button_Click(sender, e);
+            button.Click += (sender, e) => Patient_Button_Click(sender, e);
         }
     }
 
-    private void Button_Click(object sender, RoutedEventArgs e)
+    private void Study_Button_Click(object sender, RoutedEventArgs e)
     {
-        // Логика обработки клика по кнопке
+        Button button = sender as Button;
+
+        Study study = (Study)button.Tag;
+        _mainWindowManagement.SetStudyWindow(study);
+        
+        // TODO study button logic: change buttons , create user with new class 
+    }
+
+    private void Patient_Button_Click(object sender, RoutedEventArgs e)
+    {
+        // TODO patient button logic : create patient window 
     }
 }

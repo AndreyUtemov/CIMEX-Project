@@ -43,7 +43,7 @@ public class DAOStudyNeo4j : DAOStudy
 
         return studies;
     }
-
+    
     public Task<IActionResult> CreateStudy(Study study)
     {
         throw new NotImplementedException();
