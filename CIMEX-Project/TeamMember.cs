@@ -15,7 +15,6 @@ public class TeamMember : Person
         Role = role;
     }
 
-
     public void AddNewPatient()
     {
         throw new NotImplementedException();

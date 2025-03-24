@@ -28,7 +28,7 @@
 
             <!-- Upper Panel with names and study -->
             <TextBlock Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" FontSize="42" FontWeight="Bold" FontFamily="Arial" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding LeftTitle}" />
-            <TextBlock Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2" FontSize="42" FontWeight="Bold" FontFamily="Arial" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding RightTitle}" />
+            <TextBlock Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="3" FontSize="22" FontWeight="Bold" FontFamily="Arial" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding RightTitle}" />
             <TextBlock Grid.Row="3" Grid.Column="0" FontSize="12" TextAlignment="Center" VerticalAlignment="Bottom" Foreground="#01B0FF">CIMEX by SoftPanda Solutions</TextBlock>
             <TextBlock Grid.Row="3" Grid.Column="5" FontSize="12" TextAlignment="Center" VerticalAlignment="Bottom" Foreground="#01B0FF">V0.1.0</TextBlock>
             <Image Grid.Row="0" Grid.Column="5" Height="120" Source="Logo.png"></Image>

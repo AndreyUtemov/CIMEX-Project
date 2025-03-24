@@ -3,13 +3,14 @@ namespace CIMEX_Project;
 public interface DAOTeamMember
 
 {
+    Task<bool> CheckUserPassword(string eMail, string password);
     List<TeamMember> GetALlTeamMembers();
 
-    List<TeamMember> GetTeamMembersByStudy(Study study);
+    Task<bool> IsUserPI(Study study, TeamMember user);
 
-    TeamMember GetTeamMemberByLogin(string eMail);
+    Task<TeamMember> GetTeamMemberByLogin(string eMail);
 
-    void CreateInvestigator<>(Investigator investigator);
+    void CreateInvestigator(Investigator investigator);
 
     void SetInvestigator(Investigator investigator);
 

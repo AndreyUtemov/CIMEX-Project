@@ -4,9 +4,7 @@ namespace CIMEX_Project;
 
 public partial class LoginWindow : Window
 {
-    public static string secretUserLogin = "a";
-    public static string secretPassword = "a";
-
+    
     public LoginWindow()
     {
         InitializeComponent();
@@ -14,11 +12,15 @@ public partial class LoginWindow : Window
 
     private async void LoginButtonClick(object sender, RoutedEventArgs e)
     {
+        MainWindowManagement mainWindowManagement = new MainWindowManagement();
+        
         string userLogin = LoginBox.Text;
         string password = PasswordBox.Password;
+        bool accessApproved = await mainWindowManagement.CheckUser(userLogin, password);
 
-        if (userLogin == secretUserLogin && password == secretPassword)
+        if (accessApproved)
         {
+            await mainWindowManagement.ProgrammStart(userLogin);
             MainWindow mainWindow = new MainWindow();
             mainWindow.Show();
             this.Close();

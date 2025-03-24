@@ -6,13 +6,12 @@ namespace CIMEX_Project;
 
 public class ButtonFactory
 {
-    public List<Button> CreatePatientButtons(List<Patient> patientList, int visitWindow)
+    public List<Button> CreatePatientButtons(List<Patient> patientList)
     {
         List<Button> buttonList = new List<Button>();
-
         foreach (Patient patient in patientList)
         {
-            string visitDate = CreateDateString(patient.NextVisit, visitWindow);
+            string visitDate = CreateDateString(patient.NextVisit, patient.TimeWindow);
             var button = new Button()
             {
                 Content = $"{patient.Surname}\n{patient.Name}\n\n{visitDate}",

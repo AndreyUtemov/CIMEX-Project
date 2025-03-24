@@ -51,15 +51,48 @@ public class DAOPatientNeo4j : DAOPatient
         {
             Console.WriteLine($"Error fetching studies: {e.Message}");
         }
+       
 
         return patients;
     }
 
 
-    public Task<IActionResult> GetAllPatientsInStudy(Study study)
+    public async Task<List<Patient>> GetAllPatientsInStudy(Study study)
     {
         // MATCH (p:Patient)-[r]-(s:Study) WHERE s.name = "ACTIVE" RETURN p
-        throw new NotImplementedException();
+        await _neo4jClient.Connect();
+        await using var session = _neo4jClient.GetDriver().AsyncSession(); // Используем AsyncSession()
+        var patients = new List<Patient>();
+        try
+        {
+            var result = await session.RunAsync
+            ("MATCH (p:Patient)-[r:PARTICIPATES]->(s:Study)" +
+             "WHERE s.name = $studyName RETURN p.name AS name, p.surname AS surname, p.patientId AS patientId, p.nextVisit AS nextVisit," +
+             " p.window AS window, r.included AS isIncluded",
+                new { studyName = study.StudyName });
+           
+            await result.ForEachAsync(record =>
+            {
+                var name = record["name"].As<string>();
+                var surname = record["surname"].As<string>();
+                var patientId = record["patientId"].As<string>();
+                var nextVisit = record["nextVisit"].As<DateTime>();
+                var isIncluded = record["isIncluded"].As<bool>();
+                var window = record["window"].As<int>();
+
+                var patient = new Patient(
+                    name, surname, patientId, isIncluded, study.StudyName, nextVisit,  window
+                );
+                patients.Add(patient);
+            });
+            
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Error fetching studies: {e.Message}");
+        }
+
+        return patients;
     }
 
     public Task CreatePatient(Patient patient)

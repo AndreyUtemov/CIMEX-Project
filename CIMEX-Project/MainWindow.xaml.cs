@@ -6,9 +6,6 @@ using System.Windows.Media;
 
 namespace CIMEX_Project;
 
-/// <summary>
-/// Interaction logic for MainWindow.xaml
-/// </summary>
 public partial class MainWindow : Window
 {
     private static MainWindowManagement _mainWindowManagement = new MainWindowManagement();
@@ -23,21 +20,22 @@ public partial class MainWindow : Window
     {
         try
         {
-            await _mainWindowManagement.ProgrammStart("admin@cimex.at"); // Загружаем данные
-
             DataContext = new MainViewModel
             {
                 Date = DateTime.Now.ToString("dd MMMM yyyy"),
                 LeftTitle = _mainWindowManagement.GetLeftTitle(),
                 RightTitle = _mainWindowManagement.GetRightTitle()
             };
-           await AddUpperButtons(_mainWindowManagement.CreateUpperRowButtons());
-            AddMiddleButtons(_mainWindowManagement.CreateMiddleRowButtons());
-            AddBottomButtons(_mainWindowManagement.CreateBottomRowButtons());
+
+            var allButtons = _mainWindowManagement.GetMainButtons();
+
+            await AddUpperButtons(allButtons.Studies);
+            AddMiddleButtons(allButtons.Screened);
+            AddBottomButtons(allButtons.Included);
         }
         catch (Exception e)
         {
-             // TODO handle exception
+            // TODO handle exception
         }
     }
 
@@ -48,11 +46,11 @@ public partial class MainWindow : Window
         public string RightTitle { get; set; }
     }
 
-    private async Task AddUpperButtons(Task<List<Button>> upperButtons) // Асинхронный метод
+    private async Task AddUpperButtons(List<Button> upperButtons)
     {
         UpperPanel.Children.Clear();
-        List<Button> buttons = await upperButtons; // Дожидаемся результата
-        foreach (Button button in buttons) // Теперь итерируемся по List<Button>
+
+        foreach (Button button in upperButtons)
         {
             button.Click -= Study_Button_Click;
             button.Click += Study_Button_Click;
@@ -87,10 +85,11 @@ public partial class MainWindow : Window
     private void Study_Button_Click(object sender, RoutedEventArgs e)
     {
         Button button = sender as Button;
-
+        
         Study study = (Study)button.Tag;
         _mainWindowManagement.SetStudyWindow(study);
-        
+       LoadDataAndInitializeUI();
+
         // TODO study button logic: change buttons , create user with new class 
     }
 

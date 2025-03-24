@@ -7,50 +7,59 @@ namespace CIMEX_Project;
 public class MainWindowManagement
 {
     private static ButtonFactory _buttonFactory = new ButtonFactory();
-    private static TeamMember user = new TeamMember("Admin", "Admin", "admin@cimex.at", "Admin");
-    private static List<Study> studyList;
+    private static TeamMember user;
     private static Study actualStudy;
     private static bool isMainWindow = true;
     private static readonly Neo4jClient _neo4jClient = Neo4jClient.Instance; // Используем singleton
     private static DAOPatientNeo4j _daoPatientNeo4J = new DAOPatientNeo4j(_neo4jClient);
     private static DAOStudyNeo4j _daoStudyNeo4J = new DAOStudyNeo4j(_neo4jClient);
-    private static List<Patient> includedPatients = new List<Patient>();
-    private static List<Patient> screenedPatients = new List<Patient>();
+    private static DAOTeamMemeberNeo4j _daoTeamMemeberNeo4J = new DAOTeamMemeberNeo4j();
+    private static List<Button> studyButtons = new List<Button>();
+    private static List<Button> screenedButtons = new List<Button>();
+    private static List<Button> includedButtons = new List<Button>();
+
+
+ 
+    public async Task<bool> CheckUser(string login, string password)
+    {
+        try
+        {
+            bool accessApproved = await _daoTeamMemeberNeo4J.CheckUserPassword(login, password);
+            return accessApproved;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
     
-
-
     public async Task ProgrammStart(string eMail)
     {
-        // user = _daoInvestigatorNeo4J.GetInvestigator(eMail);
-        
-        // isMainWindow = true;
-      
-        studyList = await _daoStudyNeo4J.GetAllStudy(user);
+        user = await _daoTeamMemeberNeo4J.GetTeamMemberByLogin(eMail);
+        List<Study> studyList = await _daoStudyNeo4J.GetAllStudy(user);
         List<Patient> allPatientsList = await _daoPatientNeo4J.GetAllPatients(user);
-        separatePreScreenedPatients(allPatientsList);
-        
+        var separatedPatientLists = SeparatePatients(allPatientsList);
+        studyButtons = await CreateStudyButtons(studyList);
+        screenedButtons = CreatePatientsButtons(separatedPatientLists.Screened);
+        includedButtons = CreatePatientsButtons(separatedPatientLists.Included);
     }
+    
+    
 
-    public async Task<List<Button>> CreateUpperRowButtons()
+    public async Task<List<Button>> CreateStudyButtons(List<Study> studyList)
     {
-        List<Button> buttonList =_buttonFactory.CreateStudyButtons(studyList);
+        List<Button> buttonList = _buttonFactory.CreateStudyButtons(studyList);
         return buttonList;
     }
 
-    public List<Button> CreateMiddleRowButtons()
+    public List<Button> CreatePatientsButtons(List<Patient> patients)
     {
-        
-        List<Button> buttonList = _buttonFactory.CreatePatientButtons(includedPatients, 0);
+        List<Button> buttonList = _buttonFactory.CreatePatientButtons(patients);
 
         return buttonList;
     }
 
-    public List<Button> CreateBottomRowButtons()
-    {
-        List<Button> buttonList = _buttonFactory.CreatePatientButtons(screenedPatients, 2);
-
-        return buttonList;
-    }
 
     public string GetLeftTitle()
     {
@@ -68,18 +77,26 @@ public class MainWindowManagement
             return actualStudy.StudyName + "\n" + actualStudy.FullName;
         }
     }
+
+    public (List<Button> Studies, List<Button> Screened, List<Button> Included) GetMainButtons()
+    {
+        return (Studies: studyButtons, Screened: screenedButtons, Included: includedButtons);
+    }
+
     public async Task SetStudyWindow(Study study)
     {
         isMainWindow = false;
         actualStudy = study;
-        user = await _daoTeamMemberNeo4J.getUserByStudy(user, actualStudy);
+        bool isUserPI = await _daoTeamMemeberNeo4J.IsUserPI(study, user);
+        CreateUserForStudy(isUserPI);
         List<Patient> studyPatients = await _daoPatientNeo4J.GetAllPatientsInStudy(study);
-        separatePreScreenedPatients(studyPatients);
-        
+        SeparatePatients(studyPatients);
     }
 
-    private void separatePreScreenedPatients(List<Patient> allPatientsList)
+    private (List<Patient> Included, List<Patient> Screened) SeparatePatients(List<Patient> allPatientsList)
     {
+        List<Patient> includedPatients = new List<Patient>();
+        List<Patient> screenedPatients = new List<Patient>();
         foreach (Patient patient in allPatientsList)
         {
             if (patient.Included)
@@ -91,5 +108,26 @@ public class MainWindowManagement
                 screenedPatients.Add(patient);
             }
         }
+
+        return (Included: includedPatients,Screened: screenedPatients);
+    }
+
+    private TeamMember CreateUserForStudy(bool isUserPI)
+    {
+        UserFactory userFactory = new UserFactory();
+        if (isUserPI)
+        {
+            user = userFactory.CreateUserForStudy("Principal", user);
+        }
+        else if (user.Role == "Doctor")
+        {
+            user = userFactory.CreateUserForStudy("Investigator", user);
+        }
+        else
+        {
+            user = userFactory.CreateUserForStudy("Nurse", user);
+        }
+
+        return user;
     }
 }
