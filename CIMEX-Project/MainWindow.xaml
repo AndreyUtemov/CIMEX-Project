@@ -4,10 +4,11 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CIMEX_Project"
+        xmlns:wpf="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
         Title="MainWindow" Height="900" Width="1600">
     <Grid>
-        <Grid x:Name="grid" Margin="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <Grid x:Name="grid" Margin="15" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
@@ -29,10 +30,15 @@
             <!-- Upper Panel with names and study -->
             <TextBlock Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" FontSize="42" FontWeight="Bold" FontFamily="Arial" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding LeftTitle}" />
             <TextBlock Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="3" FontSize="22" FontWeight="Bold" FontFamily="Arial" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding RightTitle}" />
-            <TextBlock Grid.Row="3" Grid.Column="0" FontSize="12" TextAlignment="Center" VerticalAlignment="Bottom" Foreground="#01B0FF">CIMEX by SoftPanda Solutions</TextBlock>
-            <TextBlock Grid.Row="3" Grid.Column="5" FontSize="12" TextAlignment="Center" VerticalAlignment="Bottom" Foreground="#01B0FF">V0.1.0</TextBlock>
+            <TextBlock Grid.Row="3" Grid.Column="0" FontSize="12" TextAlignment="Left" VerticalAlignment="Bottom" Margin="30,0,0,0" Foreground="#01B0FF">CIMEX by SoftPanda Solutions</TextBlock>
+            <TextBlock Grid.Row="3" Grid.Column="5" FontSize="12" TextAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,30,0"  Foreground="#01B0FF">V0.1.0</TextBlock>
+            <TextBlock Grid.Row="1" Grid.Column="0" FontSize="28" TextAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" Padding="30,0,0,0" Foreground="#0E239A" Text="Studies"/>
+            <TextBlock Grid.Row="2" Grid.Column="0" FontSize="28" TextAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" Padding="30,0,0,0" Foreground="#01B0FF" Text="Screened"/>
+            <TextBlock Grid.Row="3" Grid.Column="0" FontSize="28" TextAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" Padding="30,0,0,0" Foreground="#0085D4" Text="Included"/>
             <Image Grid.Row="0" Grid.Column="5" Height="120" Source="Logo.png"></Image>
-            
+            <wpf:PackIcon Kind="FoldersOutline" Width="50" Height="50" Foreground="#4F65B7" Grid.Row="1" Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            <wpf:PackIcon Kind="PersonAddOutline" Width="50" Height="50" Foreground="#4F65B7" Grid.Row="2" Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            <wpf:PackIcon Kind="AccountCogOutline" Width="50" Height="50" Foreground="#4F65B7" Grid.Row="3" Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Center"/>
             <ScrollViewer Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="4" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
                 <WrapPanel x:Name="UpperPanel" Orientation="Horizontal"></WrapPanel>
             </ScrollViewer>

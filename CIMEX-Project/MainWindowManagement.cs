@@ -19,7 +19,6 @@ public class MainWindowManagement
     private static List<Button> includedButtons = new List<Button>();
 
 
- 
     public async Task<bool> CheckUser(string login, string password)
     {
         try
@@ -33,7 +32,7 @@ public class MainWindowManagement
             throw;
         }
     }
-    
+
     public async Task ProgrammStart(string eMail)
     {
         user = await _daoTeamMemeberNeo4J.GetTeamMemberByLogin(eMail);
@@ -41,11 +40,8 @@ public class MainWindowManagement
         List<Patient> allPatientsList = await _daoPatientNeo4J.GetAllPatients(user);
         var separatedPatientLists = SeparatePatients(allPatientsList);
         studyButtons = await CreateStudyButtons(studyList);
-        screenedButtons = CreatePatientsButtons(separatedPatientLists.Screened);
-        includedButtons = CreatePatientsButtons(separatedPatientLists.Included);
     }
-    
-    
+
 
     public async Task<List<Button>> CreateStudyButtons(List<Study> studyList)
     {
@@ -109,10 +105,13 @@ public class MainWindowManagement
             }
         }
 
-        return (Included: includedPatients,Screened: screenedPatients);
+        screenedButtons = CreatePatientsButtons(screenedPatients);
+        includedButtons = CreatePatientsButtons(includedPatients);
+
+        return (Included: includedPatients, Screened: screenedPatients);
     }
 
-    private TeamMember CreateUserForStudy(bool isUserPI)
+    private void CreateUserForStudy(bool isUserPI)
     {
         UserFactory userFactory = new UserFactory();
         if (isUserPI)
@@ -127,7 +126,5 @@ public class MainWindowManagement
         {
             user = userFactory.CreateUserForStudy("Nurse", user);
         }
-
-        return user;
     }
 }

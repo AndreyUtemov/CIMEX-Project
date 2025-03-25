@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using MaterialDesignThemes.Wpf;
 
 namespace CIMEX_Project;
 
@@ -53,6 +54,27 @@ public class ButtonFactory
         return buttonList;
     }
 
+    public static List<Button> CreateVisitButtons(List<Visit> visits, DateTime actualVisit)
+    {
+        List<Button> buttonList = new List<Button>();
+        foreach (Visit visit in visits)
+        {
+            var button = new Button
+            {
+                Content = $"{visit.Name}\n{visit.DateOfVisit}",
+                Style = (Style)Application.Current.Resources["Small_Button"],
+                Tag = visit,
+                Background = new SolidColorBrush(
+                (Color)ColorConverter.ConvertFromString(
+                visit.DateOfVisit < actualVisit ? "#0E239A" :
+                visit.DateOfVisit == actualVisit ? "#0085D4" : "#01B0FF")
+                )
+            };
+            buttonList.Add(button);
+        }
+        return buttonList;
+    }
+
     private string CreateDateString(DateTime date, int window)
     {
         if (window == 0)
@@ -61,8 +83,8 @@ public class ButtonFactory
         }
         else
         {
-            return "Visit date\n" + date.AddDays(window).ToString("dd.MM.yyyy") + "\n" +
-                   date.AddDays(-1 * window).ToString("dd.MM.yyyy");
+            return "Visit date\n" + date.AddDays(-1 * window).ToString("dd.MM.yyyy") + "\n" +
+                   date.AddDays(window).ToString("dd.MM.yyyy");
         }
     }
 }

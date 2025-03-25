@@ -2,18 +2,23 @@ namespace CIMEX_Project;
 
 public class Visit
 {
-    private string name;
-    private int sheduleAfterLastVisit;
-    private int timeWindow;
-    private List<string> manipulation;
-    private bool despenceMedication;
+    public string Name { get; set; }
+    public DateTime DateOfVisit { get; set; }
+    public int TimeWindow { get;  set; }
+    public bool Completed { get; set; }
+    public List<string> Manipulation { get;  set; }
+    public bool DespenceMedication { get;  set; }
 
-    public Visit(string name, int sheduleAfterLastVisit, int timeWindow, List<string> manipulation, bool despenceMedication)
+    public Visit(string name, DateTime dateOfVisit, int timeWindow, bool completed)
     {
-        this.name = name;
-        this.sheduleAfterLastVisit = sheduleAfterLastVisit;
-        this.timeWindow = timeWindow;
-        this.manipulation = manipulation;
-        this.despenceMedication = despenceMedication;
+        Name = name;
+        DateOfVisit = dateOfVisit;
+        TimeWindow = timeWindow;
+        Completed = completed;
+    }
+
+    public Visit()
+    {
+        throw new NotImplementedException();
     }
 }

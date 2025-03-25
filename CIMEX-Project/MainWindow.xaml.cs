@@ -13,10 +13,10 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
-        LoadDataAndInitializeUI(); // Асинхронная инициализация
+        InitializeUi(); // Асинхронная инициализация
     }
 
-    private async void LoadDataAndInitializeUI()
+    private async void InitializeUi()
     {
         try
         {
@@ -88,7 +88,7 @@ public partial class MainWindow : Window
         
         Study study = (Study)button.Tag;
         _mainWindowManagement.SetStudyWindow(study);
-       LoadDataAndInitializeUI();
+       InitializeUi();
 
         // TODO study button logic: change buttons , create user with new class 
     }
