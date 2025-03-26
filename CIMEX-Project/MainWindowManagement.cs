@@ -95,11 +95,11 @@ public class MainWindowManagement
         List<Patient> screenedPatients = new List<Patient>();
         foreach (Patient patient in allPatientsList)
         {
-            if (patient.Included)
+            if (patient.Status == "screening")
             {
                 includedPatients.Add(patient);
             }
-            else
+            else 
             {
                 screenedPatients.Add(patient);
             }
@@ -127,4 +127,12 @@ public class MainWindowManagement
             user = userFactory.CreateUserForStudy("Nurse", user);
         }
     }
+
+    public async Task<TeamMember> GetUser(Patient patient)
+    {
+        bool userRole = await _daoStudyNeo4J.GetUserRoleInStudy(user);
+        CreateUserForStudy(userRole);
+        return user;
+    }
+    
 }

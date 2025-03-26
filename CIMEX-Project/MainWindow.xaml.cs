@@ -93,8 +93,16 @@ public partial class MainWindow : Window
         // TODO study button logic: change buttons , create user with new class 
     }
 
-    private void Patient_Button_Click(object sender, RoutedEventArgs e)
+    private async void Patient_Button_Click(object sender, RoutedEventArgs e)
     {
-        // TODO patient button logic : create patient window 
+       Button button = sender as Button;
+       Patient patient = (Patient)button.Tag;
+       TeamMember user = await _mainWindowManagement.GetUser(patient);
+       PatientWindowManagement patientWindowManagement = new PatientWindowManagement();
+       patientWindowManagement.SetPatientWindow(patient, user);
+       PatientWindow patientWindow = new PatientWindow();
+       patientWindow.Show();
+       this.Hide();
+
     }
 }

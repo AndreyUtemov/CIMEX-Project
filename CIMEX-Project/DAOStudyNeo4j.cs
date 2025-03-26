@@ -44,6 +44,29 @@ public class DAOStudyNeo4j : DAOStudy
         return studies;
     }
     
+    public async Task<bool> GetUserRoleInStudy(TeamMember user)
+    {
+        await _neo4jClient.Connect();
+        await using var session = _neo4jClient.GetDriver().AsyncSession(); // Используем AsyncSession()
+        bool isUserPI = false;
+
+        try
+        {
+            var result = await session.RunAsync("MATCH (s:Study)-[r:ASSIGNED_TO]-(t:TeamMember) WHERE p.email = $teamMemberEmail" +
+                                                " RETURN r.isPI AS isUserPI", new {teamMemberEmail = user.Email});
+            await result.ForEachAsync(record =>
+            {
+                isUserPI = record["isUserPI"].As<bool>();
+            });
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Error fetching studies: {e.Message}");
+        }
+
+        return isUserPI;
+    }
+    
     public Task<IActionResult> CreateStudy(Study study)
     {
         throw new NotImplementedException();

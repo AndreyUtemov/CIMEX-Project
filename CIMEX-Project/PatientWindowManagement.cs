@@ -7,11 +7,12 @@ public class PatientWindowManagement
 {
 
     private DaoVisitMongoDB _daoVisitMongoDb = new DaoVisitMongoDB();
+    private DAOTeamMemeberNeo4j _daoTeamMemeberNeo4J = new DAOTeamMemeberNeo4j();
     private static TeamMember user;
     private static Patient patient;
     private List<Button> buttonList = new List<Button>();
 
-    public void SetPatientWindow(TeamMember userInThisStudy, Patient patientToSet)
+    public void SetPatientWindow(Patient patientToSet, TeamMember userInThisStudy)
     {
         user = userInThisStudy;
         patient = patientToSet;
@@ -20,7 +21,7 @@ public class PatientWindowManagement
 
     public string GetPatientName()
     {
-        return patient.PatientId + "/" + patient.Surname + " " + patient.NextVisit;
+        return  patient.Surname + "  " + patient.Name+ "  " + patient.PatientId;
     }
 
     public string GetStudyName()
@@ -36,8 +37,12 @@ public class PatientWindowManagement
     public async Task CreateVisitButtons()
     {
         List<Visit> visitList = await _daoVisitMongoDb.GetAllPatienVisits(patient.PatientId);
-        buttonList = ButtonFactory.CreateVisitButtons(visitList, patient.NextVisit);
+        buttonList = ButtonFactory.CreateVisitButtons(visitList, patient.NextVisit.DateOfVisit);
     }
-        
 
+    public async Task SetVisitData(Visit visit)
+    {
+        Dictionary<string, bool> manipulations = await _daoVisitMongoDb.GetManipulationsForSpecificPatient(patient.PatientId, visit.Name);
+        buttonList = ButtonFactory.CreateManipulationList(manipulations);
+    }
 }

@@ -66,10 +66,6 @@ public class DAOTeamMemeberNeo4j : DAOTeamMember
             Console.WriteLine(e);
             throw;
         }
-        finally
-        {
-            _neo4JClient.Disconnect();
-        }
     }
     
     public List<TeamMember> GetALlTeamMembers()
@@ -101,10 +97,6 @@ public class DAOTeamMemeberNeo4j : DAOTeamMember
         {
             Console.WriteLine(e);
             throw;
-        }
-        finally
-        {
-            _neo4JClient.Disconnect();
         }
     }
 
