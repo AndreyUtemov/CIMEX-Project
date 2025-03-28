@@ -47,16 +47,16 @@ public partial class PatientWindow : Window
 
         foreach (Button button in buttonList)
         {
-            if (!_visitscreen)
-            {
+            // if (!_visitscreen)
+            // {
                 button.Click -= VisitButtonClick;
                 button.Click += VisitButtonClick;
-            }
-            else
-            {
-                button.Click -= VisitButtonClick;
-                button.Click += ManipulationButtonClick; 
-            }
+            // }
+            // else
+            // {
+            //     button.Click -= VisitButtonClick;
+            //     button.Click += ManipulationButtonClick; 
+            // }
 
             VisitButtonPanel.Children.Add(button);
         }
@@ -68,7 +68,7 @@ public partial class PatientWindow : Window
 
         Visit visit = (Visit)button.Tag;
 
-        _patientWindowManagement.SetVisitData(visit);
+        // _patientWindowManagement.SetVisitData(visit);
         _visitscreen = true;
         // TODO visit button logic, create visit window 
     }

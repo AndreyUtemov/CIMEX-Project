@@ -87,7 +87,7 @@ public class ButtonFactory
                 Tag = manipulation.Key,
                 Background = new SolidColorBrush(
                     (Color)ColorConverter.ConvertFromString(
-                        manipulation.Value == true ? "#0E239A" : "#01B0FF")
+                        manipulation.Value? "#0E239A" : "#01B0FF")
                 )
             };
             buttonlist.Add(button);

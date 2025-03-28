@@ -24,7 +24,7 @@ public class DAOStudyNeo4j : DAOStudy
 
         try
         {
-            var result = await session.RunAsync("MATCH (s:Study)-[n]-(p) WHERE p.email = $teamMemberEmail" +
+            var result = await session.RunAsync("MATCH (s:Study)-[:ASSIGNED_TO]-(p) WHERE p.email = $teamMemberEmail" +
                                                 " RETURN s.name AS studyName, s.fullname AS fullName", new {teamMemberEmail = user.Email});
             await result.ForEachAsync(record =>
             {
@@ -52,8 +52,8 @@ public class DAOStudyNeo4j : DAOStudy
 
         try
         {
-            var result = await session.RunAsync("MATCH (s:Study)-[r:ASSIGNED_TO]-(t:TeamMember) WHERE p.email = $teamMemberEmail" +
-                                                " RETURN r.isPI AS isUserPI", new {teamMemberEmail = user.Email});
+            var result = await session.RunAsync("MATCH (s:Study)-[r:ASSIGNED_TO]-(t:TeamMember) WHERE t.email = $teamMemberEmail" +
+                                                " RETURN r.isPrincipal AS isUserPI", new {teamMemberEmail = user.Email});
             await result.ForEachAsync(record =>
             {
                 isUserPI = record["isUserPI"].As<bool>();

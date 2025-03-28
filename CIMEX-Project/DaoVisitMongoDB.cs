@@ -1,102 +1,127 @@
-using MongoDB.Bson;
-using MongoDB.Driver;
-
-
 namespace CIMEX_Project;
 
-public class DaoVisitMongoDB : IDaoVisit
+using System;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Text.Json;
+using System.Threading.Tasks;
+
+public class DaoVisitMongoDb
 {
-    private readonly IMongoClient _mongoClient;
-    private readonly IMongoDatabase _database;
+    private readonly HttpClient _httpClient;
+    private const string BaseUrl = "https://localhost:7031/api/Study";
 
-    public async Task<List<Visit>> GetAllPatienVisits(string patientID)
+    public DaoVisitMongoDb()
     {
-        var mongoClient = MongoDBClient.Instance;
-
         try
         {
-            mongoClient.Connect();
-        }
-        catch (Exception e)
-        {
-            // TODO exception handel
-        }
-
-        List<Visit> visits = new List<Visit>();
-        try
-        {
-            // Подключаемся к коллекции Visit
-            var collection = _database.GetCollection<Visit>("patient_visit_data");
-
-            // Создаем фильтр для поиска по PatientID
-            var filter = Builders<Visit>.Filter.Eq("PatientID", patientID);
-
-            // Выполняем запрос в MongoDB, используя фильтр для коллекции Visit
-            var result = await collection.Find(filter).ToListAsync();
-
-            // Преобразуем результаты в список объектов Visit
-            foreach (var visitData in result)
+            _httpClient = new HttpClient
             {
-                var visit = new Visit
-                {
-                    Name = visitData.Name,
-                    DateOfVisit = visitData.DateOfVisit.ToLocalTime(),
-                    TimeWindow = visitData.TimeWindow,
-                    Completed = visitData.Completed
-                };
-
-                visits.Add(visit);
-            }
+                BaseAddress = new Uri(BaseUrl),
+                Timeout = TimeSpan.FromSeconds(30) // Добавляем таймаут для запросов
+            };
+            _httpClient.DefaultRequestHeaders.Accept.Add(
+                new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            // TODO exception handel
+            throw new InvalidOperationException("Не удалось инициализировать HTTP-клиент.", ex);
         }
-
-        return (List<Visit>)visits;
     }
 
-    public async Task<Dictionary<string, bool>> GetManipulationsForSpecificPatient(string patientID, string visitName)
+    public async Task<List<Visit>> GetPatientVisits(string patientId)
     {
-        var mongoClient = MongoDBClient.Instance;
+        if (string.IsNullOrEmpty(patientId))
+            throw new ArgumentNullException(nameof(patientId), "Идентификатор пациента не может быть пустым.");
 
         try
         {
-            mongoClient.Connect();
-        }
-        catch (Exception e)
-        {
-            // TODO exception handel
-        }
+            string requestUrl = $"{BaseUrl}/patient-visits/{patientId}";
+            HttpResponseMessage response = await _httpClient.GetAsync(requestUrl);
 
-
-        var collection = _database.GetCollection<Visit>("patient_specific_visit_data");
-
-        // Создаем фильтр для поиска по PatientID
-        var filter = Builders<Visit>.Filter.And(
-            Builders<Visit>.Filter.Eq("PatientID", patientID),
-            Builders<Visit>.Filter.Eq("visit_name", visitName)
-        );
-
-        // Выполняем запрос в MongoDB, используя фильтр для коллекции Visit
-        var result = await collection.Find(filter).ToListAsync();
-        Dictionary<string, bool> visits = new Dictionary<string, bool>();
-        // Преобразуем результаты в список объектов Visit
-        foreach (var visit in result)
-        {
-            // Проверяем, есть ли поле "manipulations" в документе
-            if (visit.ToBsonDocument().Contains("manipulations"))
+            if (!response.IsSuccessStatusCode)
             {
-                // Достаём манипуляции из BSON
-                var manipulationsBson = visit.ToBsonDocument()["manipulations"].AsBsonDocument;
-
-                // Преобразуем BSON в Dictionary<string, bool>
-                foreach (var element in manipulationsBson.Elements)
-                {
-                    visits[element.Name] = element.Value.AsBoolean;
-                }
+                // Если API вернул ошибку, возвращаем пустой список
+                return new List<Visit>();
             }
+
+            string jsonString = await response.Content.ReadAsStringAsync();
+            if (string.IsNullOrEmpty(jsonString))
+            {
+                return new List<Visit>(); // Пустой ответ от API
+            }
+
+            PatientVisitResponse patientVisitResponse = JsonSerializer.Deserialize<PatientVisitResponse>(jsonString, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+                AllowTrailingCommas = true // Дополнительная гибкость для JSON
+            });
+
+            if (patientVisitResponse?.Visits == null)
+            {
+                return new List<Visit>(); // Нет данных о визитах
+            }
+
+            return patientVisitResponse.Visits.ConvertAll(visitData => new Visit
+            {
+                Name = visitData.Name ?? "Не указано",
+                DateOfVisit = DateTime.TryParse(visitData.DateOfVisit, out DateTime date) ? date : DateTime.MinValue,
+                Status = visitData.Status ?? "Неизвестно"
+            });
         }
-        return visits;
+        catch (HttpRequestException ex)
+        {
+            // Ошибка сети (например, API не запущен)
+            throw new InvalidOperationException($"Ошибка при запросе к API: {ex.Message}", ex);
+        }
+        catch (JsonException ex)
+        {
+            // Ошибка десериализации (JSON не соответствует структуре)
+            throw new InvalidOperationException($"Ошибка десериализации ответа API: {ex.Message}", ex);
+        }
+        catch (Exception ex)
+        {
+            // Прочие ошибки
+            throw new InvalidOperationException($"Неизвестная ошибка при получении визитов: {ex.Message}", ex);
+        }
     }
 }
+
+public class PatientVisitResponse
+{
+    public string Id { get; set; }
+    public string PatientId { get; set; }
+    public List<BsonVisit> Visits { get; set; } = new();
+}
+
+public class BsonVisit
+{
+    [System.Text.Json.Serialization.JsonPropertyName("name")]
+    public string Name { get; set; }
+
+    [System.Text.Json.Serialization.JsonPropertyName("date")]
+    public string DateOfVisit { get; set; }
+
+    [System.Text.Json.Serialization.JsonPropertyName("status")]
+    public string Status { get; set; }
+
+    [System.Text.Json.Serialization.JsonPropertyName("tasks")]
+    public List<BsonTask> Tasks { get; set; } = new();
+}
+
+public class BsonTask
+{
+    [System.Text.Json.Serialization.JsonPropertyName("name")]
+    public string Name { get; set; }
+
+    [System.Text.Json.Serialization.JsonPropertyName("status")]
+    public string Status { get; set; }
+}
+
+// Предполагаемый класс Visit (определен где-то в проекте)
+// public class Visit
+// {
+//     public string Name { get; set; }
+//     public DateTime DateOfVisit { get; set; }
+//     public string Status { get; set; }
+// }

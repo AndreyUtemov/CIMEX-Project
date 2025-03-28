@@ -82,8 +82,8 @@ public class DAOTeamMemeberNeo4j : DAOTeamMember
         bool isPI = false;
         try
         {
-            var result = await session.RunAsync("MATCH (t:Team_Member)-[r:ASSIGNED_TO]->(s:Study) WHERE  t.email = $userEmail " +
-                                                "AND s.name = $studyName RETURN  r.isPI AS isUserPI", 
+            var result = await session.RunAsync("MATCH (t:TeamMember)-[r:ASSIGNED_TO]->(s:Study) WHERE  t.email = $userEmail " +
+                                                "AND s.name = $studyName RETURN  r.isPrincipal AS isUserPI", 
                                                 new {userEmail = user.Email, studyName = study.StudyName});
             await result.ForEachAsync(record =>
             {
