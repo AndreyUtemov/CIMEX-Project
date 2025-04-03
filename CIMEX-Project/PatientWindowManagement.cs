@@ -7,14 +7,15 @@ using System.Windows.Controls;
 public class PatientWindowManagement
 {
     private readonly DaoVisitMongoDb _daoVisitMongoDb = new DaoVisitMongoDb();
-    private static TeamMember user;
-    private static Patient patient;
-    private List<Button> buttonList;
+    private TeamMember user;
+    private Patient patient;
 
-    public void SetPatientWindow(Patient patientToSet, TeamMember userInThisStudy)
+
+    public async Task SetPatientWindow(Patient patientToSet, TeamMember userInThisStudy)
     {
         user = userInThisStudy;
         patient = patientToSet;
+
     }
 
     public string GetPatientName()
@@ -27,14 +28,20 @@ public class PatientWindowManagement
         return patient.StudyName;
     }
 
-    public List<Button> GetVisitButtons()
-    {
-        return buttonList ?? new List<Button>();
-    }
-
-    public async Task CreateVisitButtons()
+    public async Task<List<Button>> GetVisitButtons(Patient patient)
     {
         List<Visit> visitList = await _daoVisitMongoDb.GetPatientVisits(patient.PatientId);
-        buttonList = ButtonFactory.CreateVisitButtons(visitList, patient.NextVisit?.DateOfVisit ?? DateTime.MinValue);
+        foreach (var visit in visitList)
+        {
+            Console.WriteLine($"Visit - {visit.Name}  Date - {visit.DateOfVisit} Status - {visit.Status}");
+        }
+        ButtonFactory buttonFactory = new ButtonFactory();
+        List<Button> buttonList = await buttonFactory.CreateVisitButtons(visitList);
+        foreach (var button in buttonList)
+        {
+            Console.WriteLine(button.Tag.ToString());
+        }
+
+        return buttonList;
     }
 }

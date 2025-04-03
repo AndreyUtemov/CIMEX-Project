@@ -36,9 +36,15 @@
             <TextBlock Grid.Row="2" Grid.Column="0" FontSize="28" TextAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" Padding="30,0,0,0" Foreground="#01B0FF" Text="Screened"/>
             <TextBlock Grid.Row="3" Grid.Column="0" FontSize="28" TextAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" Padding="30,0,0,0" Foreground="#0085D4" Text="Included"/>
             <Image Grid.Row="0" Grid.Column="5" Height="120" Source="Logo.png"></Image>
-            <wpf:PackIcon Kind="FoldersOutline" Width="50" Height="50" Foreground="#4F65B7" Grid.Row="1" Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-            <wpf:PackIcon Kind="PersonAddOutline" Width="50" Height="50" Foreground="#4F65B7" Grid.Row="2" Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-            <wpf:PackIcon Kind="AccountCogOutline" Width="50" Height="50" Foreground="#4F65B7" Grid.Row="3" Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            <Button Width="60" Height="60" Grid.Row="1" Grid.Column="5" Background="Transparent" BorderThickness="0" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <wpf:PackIcon Kind="FolderMultipleOutline" Foreground="#4F65B7" Width="50" Height="50" Margin="0"/>
+            </Button>
+            <Button Width="60" Height="60" Background="Transparent" BorderThickness="0" Padding="0" Grid.Row="2" Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <wpf:PackIcon Kind="PersonAddOutline" Width="50" Height="50" Foreground="#4F65B7" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            </Button>
+            <Button Grid.Row="3" Grid.Column="5" Background="Transparent" BorderThickness="0" Padding="0" Width="60" Height="60"  VerticalAlignment="Center" HorizontalAlignment="Center">
+            <wpf:PackIcon Kind="AccountCogOutline"  Foreground="#4F65B7" Height="50" Width="50" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            </Button>
             <ScrollViewer Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="4" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
                 <WrapPanel x:Name="UpperPanel" Orientation="Horizontal"></WrapPanel>
             </ScrollViewer>

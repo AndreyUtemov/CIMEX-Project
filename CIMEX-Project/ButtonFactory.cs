@@ -12,10 +12,9 @@ public class ButtonFactory
         List<Button> buttonList = new List<Button>();
         foreach (Patient patient in patientList)
         {
-            string visitDate = CreateDateString(patient.NextVisit.DateOfVisit, patient.NextVisit.TimeWindow);
             var button = new Button()
             {
-                Content = $"{patient.Surname}\n{patient.Name}\n\n{visitDate}",
+                Content = $"{patient.Surname}\n{patient.Name}\n\n{patient.NextVisit.DateOfVisit.ToString("dd.MM.yyyy")}",
                 Style = (Style)Application.Current.Resources["Big_Button"],
                 Tag = patient
             };
@@ -54,20 +53,20 @@ public class ButtonFactory
         return buttonList;
     }
 
-    public static List<Button> CreateVisitButtons(List<Visit> visits, DateTime actualVisit)
+    public async Task<List<Button>> CreateVisitButtons(List<Visit> visits)
     {
         List<Button> buttonList = new List<Button>();
         foreach (Visit visit in visits)
         {
+            Console.WriteLine($"{visit.Name}  {visit.DateOfVisit.ToString("dd.MM.yyyy")}");
             var button = new Button
             {
-                Content = $"{visit.Name}\n{visit.DateOfVisit}",
+                Content = $"{visit.Name}\n{visit.DateOfVisit.ToString("dd.MM.yyyy")}",
                 Style = (Style)Application.Current.Resources["Small_Button"],
                 Tag = visit,
                 Background = new SolidColorBrush(
-                (Color)ColorConverter.ConvertFromString(
-                visit.DateOfVisit < actualVisit ? "#0E239A" :
-                visit.DateOfVisit == actualVisit ? "#0085D4" : "#01B0FF")
+                visit.Status == "completed" ? ((Color)ColorConverter.ConvertFromString("#0E239A")) :
+                    visit.Status == "scheduled" ? ((Color)ColorConverter.ConvertFromString("#0085D4")) : ((Color)ColorConverter.ConvertFromString("#01B0FF"))
                 )
             };
             buttonList.Add(button);
@@ -95,17 +94,5 @@ public class ButtonFactory
 
         return buttonlist;
     }
-
-    private string CreateDateString(DateTime date, int window)
-    {
-        if (window == 0)
-        {
-            return "Visit date\n" + date.ToString("dd.MM.yyyy");
-        }
-        else
-        {
-            return "Visit date\n" + date.AddDays(-1 * window).ToString("dd.MM.yyyy") + "\n" +
-                   date.AddDays(window).ToString("dd.MM.yyyy");
-        }
-    }
+    
 }

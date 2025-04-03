@@ -12,15 +12,15 @@ public partial class LoginWindow : Window
 
     private async void LoginButtonClick(object sender, RoutedEventArgs e)
     {
-        MainWindowManagement mainWindowManagement = new MainWindowManagement();
         
         string userLogin = LoginBox.Text;
         string password = PasswordBox.Password;
-        bool accessApproved = await mainWindowManagement.CheckUser(userLogin, password);
+        bool accessApproved = await CheckUser(userLogin, password);
 
         if (accessApproved)
         {
-            await mainWindowManagement.ProgrammStart(userLogin);
+            AllProgrammManagement allProgrammManagement = new AllProgrammManagement();
+            await allProgrammManagement.ProgrammStart(userLogin);
             MainWindow mainWindow = new MainWindow();
             mainWindow.Show();
             this.Close();
@@ -30,4 +30,20 @@ public partial class LoginWindow : Window
             MessageBox.Show("Wrong Login or Password", "Fail", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
+    
+    public async Task<bool> CheckUser(string login, string password)
+    {
+        try
+        {
+            DAOTeamMemeberNeo4j daoTeamMemeberNeo4J = new DAOTeamMemeberNeo4j();
+            bool accessApproved = await daoTeamMemeberNeo4J.CheckUserPassword(login, password);
+            return accessApproved;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
 }
+

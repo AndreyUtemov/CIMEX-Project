@@ -6,40 +6,47 @@ namespace CIMEX_Project;
 
 public partial class PatientWindow : Window
 {
-    private static PatientWindowManagement _patientWindowManagement = new PatientWindowManagement();
-    private static bool _visitscreen = false;
-
-    public PatientWindow()
+    private bool _visitscreen = false;
+    private readonly Patient _patient;
+   
+    public PatientWindow(Patient patient)
     {
+        _patient = patient;
         InitializeComponent();
         InitializePatientWindowUi();
-    }
-
-    public class PatientViewModel
-    {
-        public string PatientName { get; set; }
-        public string StudyName { get; set; }
     }
 
     private async void InitializePatientWindowUi()
     {
         try
         {
-            DataContext = new PatientViewModel()
+            PatientWindowManagement _patientWindowManagement = new PatientWindowManagement();
+            Console.WriteLine("GO GO");
+            var allVisitButtons = await _patientWindowManagement.GetVisitButtons(_patient);
+            Console.WriteLine("GO GO GO");
+            foreach (var button in allVisitButtons)
             {
-                PatientName = _patientWindowManagement.GetPatientName(),
-                StudyName = _patientWindowManagement.GetStudyName(),
-            };
+                Console.WriteLine("Button is here");
+            }
 
-            var allVisitButtons = _patientWindowManagement.GetVisitButtons();
-
+            Console.WriteLine("GO");
             await AddButtons(allVisitButtons);
         }
         catch (Exception e)
         {
-            // TODO handle exception
+            Console.WriteLine($"Ошибка в InitializePatientWindowUi: {e.Message}");
         }
+
+        DataContext = new PatientViewModel
+        {
+            Titel = $"{_patient.Surname} {_patient.Name}\n{_patient.StudyName}"
+        };
     }
+    
+    public class PatientViewModel
+    {
+        public string Titel { get; set; }
+       }
 
     private async Task AddButtons(List<Button> buttonList)
     {
@@ -49,8 +56,8 @@ public partial class PatientWindow : Window
         {
             // if (!_visitscreen)
             // {
-                button.Click -= VisitButtonClick;
-                button.Click += VisitButtonClick;
+            button.Click -= VisitButtonClick;
+            button.Click += VisitButtonClick;
             // }
             // else
             // {
@@ -80,5 +87,9 @@ public partial class PatientWindow : Window
         button.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0E239A"));
         button.Click -= ManipulationButtonClick;
     }
-    
+
+    private void CloseWindow_Click(object sender, RoutedEventArgs e)
+    {
+        this.Close(); // Закрываем окно (можно нажать крестик или кнопку)
+    }
 }

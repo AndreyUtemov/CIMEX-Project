@@ -5,8 +5,9 @@ namespace CIMEX_Project;
 public class TeamMember : Person
 {
     public string Email { get; private set; }
-    
     public string Role { get; private set; }
+    public List<Study> Studies { get;  set; }
+    
 
 
     public TeamMember(string name, string surname, string email, string role) : base(name, surname)

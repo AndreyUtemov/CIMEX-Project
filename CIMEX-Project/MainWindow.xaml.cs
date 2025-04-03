@@ -8,35 +8,35 @@ namespace CIMEX_Project;
 
 public partial class MainWindow : Window
 {
-    private static MainWindowManagement _mainWindowManagement = new MainWindowManagement();
+    private static AllProgrammManagement _allProgrammManagement = new AllProgrammManagement();
 
-    public MainWindow()
+    public MainWindow ()
     {
+        
         InitializeComponent();
-        InitializeUi(); // Асинхронная инициализация
+        InitializeUi(); 
     }
 
-    private async void InitializeUi()
+    private async Task InitializeUi()
     {
+        var programmData = await _allProgrammManagement.ProgrammStart();
+        
         try
         {
             DataContext = new MainViewModel
             {
                 Date = DateTime.Now.ToString("dd MMMM yyyy"),
-                LeftTitle = _mainWindowManagement.GetLeftTitle(),
-                RightTitle = _mainWindowManagement.GetRightTitle()
+                LeftTitle = _allProgrammManagement.GetLeftTitle(),
+                RightTitle = _allProgrammManagement.GetRightTitle()
             };
-
-            var allButtons = _mainWindowManagement.GetMainButtons();
-
-            await AddUpperButtons(allButtons.Studies);
-            AddMiddleButtons(allButtons.Screened);
-            AddBottomButtons(allButtons.Included);
         }
         catch (Exception e)
         {
             // TODO handle exception
         }
+        AddUpperButtons(programmData.Studies);
+        AddMiddleButtons(programmData.Screened);
+        AddBottomButtons(programmData.Included);
     }
 
     public class MainViewModel
@@ -46,7 +46,7 @@ public partial class MainWindow : Window
         public string RightTitle { get; set; }
     }
 
-    private async Task AddUpperButtons(List<Button> upperButtons)
+    private void AddUpperButtons(List<Button> upperButtons)
     {
         UpperPanel.Children.Clear();
 
@@ -87,20 +87,20 @@ public partial class MainWindow : Window
         Button button = sender as Button;
         
         Study study = (Study)button.Tag;
-        _mainWindowManagement.SetStudyWindow(study);
+        _allProgrammManagement.SetStudyWindow(study);
        InitializeUi();
-
-        // TODO study button logic: change buttons , create user with new class 
+       
     }
 
     private async void Patient_Button_Click(object sender, RoutedEventArgs e)
     {
        Button button = sender as Button;
        Patient patient = (Patient)button.Tag;
-       TeamMember user = await _mainWindowManagement.GetUser(patient);
-       PatientWindowManagement patientWindowManagement = new PatientWindowManagement();
-       patientWindowManagement.SetPatientWindow(patient, user);
-       PatientWindow patientWindow = new PatientWindow();
+       TeamMember user = await _allProgrammManagement.GetUser(patient);
+       // PatientWindowManagement patientWindowManagement = new PatientWindowManagement();
+       // await patientWindowManagement.SetPatientWindow(patient, user);
+       PatientWindow patientWindow = new PatientWindow(patient);
+       patientWindow.Closed += (s, args) => this.Show(); 
        patientWindow.Show();
        this.Hide();
 
