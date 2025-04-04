@@ -20,7 +20,7 @@ public partial class LoginWindow : Window
         if (accessApproved)
         {
             AllProgrammManagement allProgrammManagement = new AllProgrammManagement();
-            await allProgrammManagement.ProgrammStart(userLogin);
+            await allProgrammManagement.SetUser(userLogin);
             MainWindow mainWindow = new MainWindow();
             mainWindow.Show();
             this.Close();

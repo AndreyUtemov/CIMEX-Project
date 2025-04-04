@@ -62,12 +62,12 @@ public class DaoVisitMongoDb
                 return new List<Visit>(); // Нет данных о визитах
             }
 
-            return patientVisitResponse.Visits.ConvertAll(visitData => new Visit
-            {
-                Name = visitData.Name ?? "Не указано",
-                DateOfVisit = DateTime.TryParse(visitData.DateOfVisit, out DateTime date) ? date : DateTime.MinValue,
-                Status = visitData.Status ?? "Неизвестно"
-            });
+            return patientVisitResponse.Visits.ConvertAll(visitData => new Visit(
+                visitData.Name ?? "Не указано",
+                DateTime.TryParse(visitData.DateOfVisit, out DateTime date) ? date : DateTime.MinValue,
+                visitData.TimeWindow,
+                visitData.Status ?? "Неизвестно"
+            ));
         }
         catch (HttpRequestException ex)
         {
@@ -105,8 +105,8 @@ public class BsonVisit
     [System.Text.Json.Serialization.JsonPropertyName("status")]
     public string Status { get; set; }
 
-    [System.Text.Json.Serialization.JsonPropertyName("tasks")]
-    public List<BsonTask> Tasks { get; set; } = new();
+    [System.Text.Json.Serialization.JsonPropertyName("timeWindow")]
+    public int TimeWindow{ get; set; }
 }
 
 public class BsonTask

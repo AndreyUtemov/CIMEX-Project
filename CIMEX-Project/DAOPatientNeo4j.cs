@@ -26,65 +26,27 @@ public class DAOPatientNeo4j : DAOPatient
         {
             var result = await session.RunAsync
             ("MATCH (p:Patient)-[r:ENROLLED_IN]->(s:Study)<-[:ASSIGNED_TO]-(t:TeamMember) " +
+             "MATCH (p)-[:SCHEDULED]-(v:Visit)" +
              "WHERE t.email = $teamMemberEmail AND r.patientStatus <> 'ended'  " +
-             "RETURN p.name AS name, p.surname AS surname, p.id AS patientId, r.plannedVisitDate AS nextVisit, r.visitName AS visit, s.name AS studyName, r.patientStatus AS status",
+             "RETURN p.name AS name, p.surname AS surname, p.cid AS patientCid, p.sid AS patientSid," +
+             " v.visitDate AS visitDate, v.visitName AS nextVisit, s.name AS studyName, r.patientStatus AS status",
                 new { teamMemberEmail = user.Email });
 
             await result.ForEachAsync(record =>
             {
                 var name = record["name"].As<string>();
                 var surname = record["surname"].As<string>();
-                var patientId = record["patientId"].As<string>();
-                var nextVisit = record["nextVisit"].As<DateTime>();
+                var patientCid = record["patientCid"].As<string>();
+                var patientSid = record["patientSid"].As<string>();
+                var nextVisit = record["nextVisit"].As<string>();
+                var visitDate = record["visitDate"].As<DateTime>();
                 var status = record["status"].As<string>();
-                var visitName = record["visit"].As<string>();
                 var studyName = record["studyName"].As<string>();
 
-                var visit = new Visit(visitName, nextVisit, "scheduled");
+                var visit = new Visit(nextVisit, visitDate);
 
                 var patient = new Patient(
-                    name, surname, patientId, status, studyName, visit
-                );
-                patients.Add(patient);
-            });
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine($"Error fetching studies: {e.Message}");
-        }
-
-
-        return patients;
-    }
-
-
-    public async Task<List<Patient>> GetAllPatientsInStudy(Study study)
-    {
-        // MATCH (p:Patient)-[r]-(s:Study) WHERE s.name = "ACTIVE" RETURN p
-        await _neo4jClient.Connect();
-        await using var session = _neo4jClient.GetDriver().AsyncSession(); // Используем AsyncSession()
-        var patients = new List<Patient>();
-        try
-        {
-            var result = await session.RunAsync
-            ("MATCH (p:Patient)-[r:ENROLLED_IN]->(s:Study) WHERE s.name = $studyName AND r.patientStatus  <> 'ended' RETURN p.name AS name, " +
-             "p.surname AS surname, p.id AS patientId, r.plannedVisitDate AS nextVisit, r.visitName AS visit, r.patientStatus AS status",
-                new { studyName = study.StudyName });
-
-            await result.ForEachAsync(record =>
-            {
-                var name = record["name"].As<string>();
-                var surname = record["surname"].As<string>();
-                var patientId = record["patientId"].As<string>();
-                var nextVisit = record["nextVisit"].As<DateTime>();
-                var status = record["status"].As<string>();
-               
-                var visitName = record["visit"].As<string>();
-
-                var visit = new Visit(visitName, nextVisit, "scheduled");
-
-                var patient = new Patient(
-                    name, surname, patientId, status, study.StudyName, visit
+                    name, surname, patientCid, patientSid, studyName, status, visit
                 );
                 patients.Add(patient);
             });
@@ -96,6 +58,7 @@ public class DAOPatientNeo4j : DAOPatient
 
         return patients;
     }
+    
 
     public Task CreatePatient(Patient patient)
     {

@@ -42,7 +42,7 @@ public class ButtonFactory
                 Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0E239A")),
                 Tag = study
             };
-            if (study.NeedAtention)
+            if (study.NeedAttention)
             {
                 button.Foreground = new SolidColorBrush(Colors.OrangeRed);
             }
@@ -58,10 +58,14 @@ public class ButtonFactory
         List<Button> buttonList = new List<Button>();
         foreach (Visit visit in visits)
         {
+            string contentString;
             Console.WriteLine($"{visit.Name}  {visit.DateOfVisit.ToString("dd.MM.yyyy")}");
+            contentString = visit.TimeWindow == 0
+                ? $"{visit.Name}\n{visit.DateOfVisit.ToString("dd.MM.yyyy")}"
+                : $"{visit.Name}\n{visit.DateOfVisit.AddDays(visit.TimeWindow).ToString("dd.MM.yyyy")}";
             var button = new Button
             {
-                Content = $"{visit.Name}\n{visit.DateOfVisit.ToString("dd.MM.yyyy")}",
+                Content =  contentString,
                 Style = (Style)Application.Current.Resources["Small_Button"],
                 Tag = visit,
                 Background = new SolidColorBrush(

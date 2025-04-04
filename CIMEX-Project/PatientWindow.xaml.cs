@@ -7,10 +7,12 @@ namespace CIMEX_Project;
 public partial class PatientWindow : Window
 {
     private bool _visitscreen = false;
-    private readonly Patient _patient;
+    private Patient _patient;
+    private TeamMember _user;
    
-    public PatientWindow(Patient patient)
+    public PatientWindow(Patient patient, TeamMember user)
     {
+        _user = user;
         _patient = patient;
         InitializeComponent();
         InitializePatientWindowUi();
@@ -54,16 +56,16 @@ public partial class PatientWindow : Window
 
         foreach (Button button in buttonList)
         {
-            // if (!_visitscreen)
-            // {
+            if (!_visitscreen)
+            {
             button.Click -= VisitButtonClick;
             button.Click += VisitButtonClick;
-            // }
-            // else
-            // {
-            //     button.Click -= VisitButtonClick;
-            //     button.Click += ManipulationButtonClick; 
-            // }
+            }
+            else
+            {
+                button.Click -= VisitButtonClick;
+                button.Click += ManipulationButtonClick; 
+            }
 
             VisitButtonPanel.Children.Add(button);
         }

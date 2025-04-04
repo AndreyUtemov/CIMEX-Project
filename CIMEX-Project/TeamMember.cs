@@ -6,7 +6,6 @@ public class TeamMember : Person
 {
     public string Email { get; private set; }
     public string Role { get; private set; }
-    public List<Study> Studies { get;  set; }
     
 
 
@@ -22,14 +21,19 @@ public class TeamMember : Person
     }
 
     
-    public  List<Patient> GetAllPatints()
+    public async Task<List<Patient>> GetAllPatients(TeamMember user)
     {
-        throw new NotImplementedException();
+        DAOPatientNeo4j daoPatientNeo4J = new DAOPatientNeo4j();
+        List<Patient> patients = await daoPatientNeo4J.GetAllPatients(user);
+        return patients;
     }
 
-    public  Patient GetPatient()
+    public List<Patient> GetAllPatientsInStudy(string study, List<Patient> patients)
     {
-        throw new NotImplementedException();
+        List<Patient> patientsInStudy = patients
+            .Where(patient => patient.StudyName == study)
+            .ToList();
+        return patientsInStudy;
     }
 
     public  List<TeamMember> GetTeamList()
@@ -37,9 +41,11 @@ public class TeamMember : Person
         throw new NotImplementedException();
     }
 
-    public  List<Study> GetStudyList()
+    public async Task<List<Study>> GetAllStudy(TeamMember user)
     {
-        throw new NotImplementedException();
+        DAOStudyNeo4j daoStudyNeo4J = new DAOStudyNeo4j();
+        List<Study> studies = await daoStudyNeo4J.GetAllStudy(user);
+        return studies;
     }
 
     public  Study GetStudy()

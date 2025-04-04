@@ -2,25 +2,28 @@
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Media;
+using MaterialDesignThemes.Wpf;
 
 namespace CIMEX_Project;
 
 public partial class MainWindow : Window
 {
     private static AllProgrammManagement _allProgrammManagement = new AllProgrammManagement();
+    private static List<Button> _studyButtons;
+    private static List<Button> _screenedButtons;
+    private static List<Button> _includedButtons;
 
     public MainWindow ()
     {
-        
+        SetButtons();
         InitializeComponent();
         InitializeUi(); 
     }
 
     private async Task InitializeUi()
     {
-        var programmData = await _allProgrammManagement.ProgrammStart();
-        
         try
         {
             DataContext = new MainViewModel
@@ -34,9 +37,9 @@ public partial class MainWindow : Window
         {
             // TODO handle exception
         }
-        AddUpperButtons(programmData.Studies);
-        AddMiddleButtons(programmData.Screened);
-        AddBottomButtons(programmData.Included);
+        AddUpperButtons(_studyButtons);
+        AddMiddleButtons(_screenedButtons);
+        AddBottomButtons(_includedButtons);
     }
 
     public class MainViewModel
@@ -44,6 +47,15 @@ public partial class MainWindow : Window
         public string Date { get; set; }
         public string LeftTitle { get; set; }
         public string RightTitle { get; set; }
+    }
+
+    private async Task SetButtons()
+    {
+        var buttonList = await _allProgrammManagement.ProgrammStart();
+        _studyButtons = buttonList.Studies;
+        _screenedButtons = buttonList.Included;
+        _includedButtons = buttonList.Included;
+
     }
 
     private void AddUpperButtons(List<Button> upperButtons)
@@ -85,9 +97,10 @@ public partial class MainWindow : Window
     private void Study_Button_Click(object sender, RoutedEventArgs e)
     {
         Button button = sender as Button;
-        
         Study study = (Study)button.Tag;
-        _allProgrammManagement.SetStudyWindow(study);
+        var studyWindowData = _allProgrammManagement.SetStudyWindow(study);
+        _includedButtons = studyWindowData.Included;
+        _screenedButtons = studyWindowData.Screened;
        InitializeUi();
        
     }
@@ -96,10 +109,8 @@ public partial class MainWindow : Window
     {
        Button button = sender as Button;
        Patient patient = (Patient)button.Tag;
-       TeamMember user = await _allProgrammManagement.GetUser(patient);
-       // PatientWindowManagement patientWindowManagement = new PatientWindowManagement();
-       // await patientWindowManagement.SetPatientWindow(patient, user);
-       PatientWindow patientWindow = new PatientWindow(patient);
+       TeamMember user = _allProgrammManagement.GetUserRoleForPatient(patient);
+       PatientWindow patientWindow = new PatientWindow(patient, user);
        patientWindow.Closed += (s, args) => this.Show(); 
        patientWindow.Show();
        this.Hide();

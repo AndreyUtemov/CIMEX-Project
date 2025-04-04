@@ -8,6 +8,17 @@ public class Visit
     public string Status { get; set; }
     public List<string> Tasks { get;  set; }
     // public bool DespenceMedication { get;  set; }
+    public Visit(string name, DateTime dateOfVisit)
+    {
+        Name = name;
+        DateOfVisit = dateOfVisit;
+    }
 
-
+    public Visit(string name, DateTime dateOfVisit, int timeWindow, string status)
+    {
+        Name = name;
+        DateOfVisit = dateOfVisit;
+        TimeWindow = timeWindow;
+        Status = status;
+    }
 }

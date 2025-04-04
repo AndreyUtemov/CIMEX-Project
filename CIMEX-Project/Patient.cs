@@ -2,16 +2,18 @@ namespace CIMEX_Project;
 
 public class Patient : Person
 {
-    public string PatientId { get; private set; }
+    public string PatientHospitalId { get; private set; }
+    public string PatientStudyId { get; private set; }
+    public string StudyName { get; private set; }
     public string Status { get; private set; }
-    public Visit NextVisit { get; private set; }
-    public bool Included { get; private set; }
+    public Visit NextVisit { get;  set; }
 
-    public Patient(string name, string surname, string patientId, string status, Visit nextVisit, bool included) : base(name, surname)
+    public Patient(string name, string surname, string patientHospitalId, string patientStudyId, string studyName, string status, Visit nextVisit) : base(name, surname)
     {
-        PatientId = patientId;
+        PatientHospitalId = patientHospitalId;
+        PatientStudyId = patientStudyId;
+        StudyName = studyName;
         Status = status;
         NextVisit = nextVisit;
-        Included = included;
     }
 }

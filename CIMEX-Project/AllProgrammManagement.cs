@@ -2,6 +2,7 @@ using System.DirectoryServices.ActiveDirectory;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using MaterialDesignThemes.Wpf;
+using MongoDB.Driver.Linq;
 
 namespace CIMEX_Project;
 
@@ -11,17 +12,15 @@ public class AllProgrammManagement
     private static TeamMember _user;
     private static Study actualStudy;
     private static bool isMainWindow = true;
-    private static readonly Neo4jClient _neo4jClient = Neo4jClient.Instance; // Используем singl.eton
-    private static DAOPatientNeo4j _daoPatientNeo4J = new DAOPatientNeo4j(_neo4jClient);
-    private static DAOStudyNeo4j _daoStudyNeo4J = new DAOStudyNeo4j(_neo4jClient);
-    private static DAOTeamMemeberNeo4j _daoTeamMemeberNeo4J = new DAOTeamMemeberNeo4j();
-
-
-
+    private List<Patient> _patients;
+    private List<Study> _studies;
+    private static readonly Neo4jClient _neo4jClient = Neo4jClient.Instance; 
+  
     public async Task SetUser(string eMail)
     {
         try
         {
+            DAOTeamMemeberNeo4j _daoTeamMemeberNeo4J = new DAOTeamMemeberNeo4j();
            _user = await _daoTeamMemeberNeo4J.GetTeamMemberByLogin(eMail);
         }
         catch (Exception e)
@@ -33,19 +32,14 @@ public class AllProgrammManagement
 
     public async Task<(List<Button> Studies, List<Button> Screened, List<Button> Included)> ProgrammStart()
     {
-        
-        List<Study> studyList = _user.GetAllStudy(_user);
-        List<Patient> allPatientsList = _user.GetAllPatients(_user);
-        var separatedPatientLists = SeparatePatients(allPatientsList);
-        List<Button> studyButtons =  CreateStudyButtons(studyList);
+        _studies = await _user.GetAllStudy(_user);
+        _patients = await _user.GetAllPatients(_user);
+        var separatedPatientLists = SeparatePatients(_patients);
+        List<Button> studyButtons =  CreateStudyButtons(_studies);
         List<Button> screenedPatientsButton = CreatePatientsButtons(separatedPatientLists.Screened);
         List<Button> includedPetientsButton = CreatePatientsButtons(separatedPatientLists.Included);
-        _user.Studies = studyList;
-        
         return (studyButtons, screenedPatientsButton, includedPetientsButton);
     }
-
-
     private List<Button> CreateStudyButtons(List<Study> studyList)
     {
         List<Button> buttonList = _buttonFactory.CreateStudyButtons(studyList);
@@ -76,14 +70,17 @@ public class AllProgrammManagement
             return actualStudy.StudyName + "\n" + actualStudy.FullName;
         }
     }
-    public  SetStudyWindow(Study study)
+    public (List<Button> Screened, List<Button> Included) SetStudyWindow(Study study)
     {
         isMainWindow = false;
         actualStudy = study;
-        string userStatusInStudy = _user.UserStatusInStudy(study);
-        CreateUserForStudy(userStatusInStudy);
-        List<Patient> studyPatients = study.Patients;
-        SeparatePatients(studyPatients);
+        List<Patient> studyPatients = _user.GetAllPatientsInStudy(study.StudyName, _patients);
+        string userStatusInStudy = study.RoleOfUser;
+        _user = CreateUserForStudy(userStatusInStudy);
+        var separatedPatientLists = SeparatePatients(studyPatients);
+        List<Button> screenedPatientsButton = CreatePatientsButtons(separatedPatientLists.Screened);
+        List<Button> includedPetientsButton = CreatePatientsButtons(separatedPatientLists.Included);
+        return (screenedPatientsButton, includedPetientsButton);
     }
 
     private (List<Patient> Included, List<Patient> Screened) SeparatePatients(List<Patient> allPatientsList)
@@ -104,20 +101,30 @@ public class AllProgrammManagement
         return (Included: includedPatients, Screened: screenedPatients);
     }
 
-    private void CreateUserForStudy(string userRoleInStudy)
+    private TeamMember CreateUserForStudy(string userRoleInStudy)
     {
         UserFactory userFactory = new UserFactory();
+        TeamMember user;
         if (userRoleInStudy.Equals("Principal"))
         {
-            _user = userFactory.CreateUserForStudy(userRoleInStudy, _user);
+            user = userFactory.CreateUserForStudy(userRoleInStudy, _user);
         }
         else if (userRoleInStudy.Equals("Investigator"))
         {
-            _user = userFactory.CreateUserForStudy("Investigator", _user);
+            user = userFactory.CreateUserForStudy("Investigator", _user);
         }
         else
         {
-            _user = userFactory.CreateUserForStudy("Nurse", _user);
+            user = userFactory.CreateUserForStudy("Nurse", _user);
         }
+
+        return user;
+    }
+
+    public TeamMember GetUserRoleForPatient(Patient patient)
+    {
+        Study study = _studies.Single(std => std.StudyName == patient.StudyName);
+        CreateUserForStudy(study.RoleOfUser);
+        return _user;
     }
 }
