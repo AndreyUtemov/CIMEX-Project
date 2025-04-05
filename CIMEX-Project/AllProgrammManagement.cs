@@ -14,14 +14,14 @@ public class AllProgrammManagement
     private static bool isMainWindow = true;
     private List<Patient> _patients;
     private List<Study> _studies;
-    private static readonly Neo4jClient _neo4jClient = Neo4jClient.Instance; 
-  
+    private static readonly Neo4jClient _neo4jClient = Neo4jClient.Instance;
+
     public async Task SetUser(string eMail)
     {
         try
         {
             DAOTeamMemeberNeo4j _daoTeamMemeberNeo4J = new DAOTeamMemeberNeo4j();
-           _user = await _daoTeamMemeberNeo4J.GetTeamMemberByLogin(eMail);
+            _user = await _daoTeamMemeberNeo4J.GetTeamMemberByLogin(eMail);
         }
         catch (Exception e)
         {
@@ -35,11 +35,12 @@ public class AllProgrammManagement
         _studies = await _user.GetAllStudy(_user);
         _patients = await _user.GetAllPatients(_user);
         var separatedPatientLists = SeparatePatients(_patients);
-        List<Button> studyButtons =  CreateStudyButtons(_studies);
+        List<Button> studyButtons = CreateStudyButtons(_studies);
         List<Button> screenedPatientsButton = CreatePatientsButtons(separatedPatientLists.Screened);
         List<Button> includedPetientsButton = CreatePatientsButtons(separatedPatientLists.Included);
         return (studyButtons, screenedPatientsButton, includedPetientsButton);
     }
+
     private List<Button> CreateStudyButtons(List<Study> studyList)
     {
         List<Button> buttonList = _buttonFactory.CreateStudyButtons(studyList);
@@ -70,6 +71,7 @@ public class AllProgrammManagement
             return actualStudy.StudyName + "\n" + actualStudy.FullName;
         }
     }
+
     public (List<Button> Screened, List<Button> Included) SetStudyWindow(Study study)
     {
         isMainWindow = false;
@@ -93,11 +95,12 @@ public class AllProgrammManagement
             {
                 includedPatients.Add(patient);
             }
-            else 
+            else
             {
                 screenedPatients.Add(patient);
             }
         }
+
         return (Included: includedPatients, Screened: screenedPatients);
     }
 
@@ -126,5 +129,15 @@ public class AllProgrammManagement
         Study study = _studies.Single(std => std.StudyName == patient.StudyName);
         CreateUserForStudy(study.RoleOfUser);
         return _user;
+    }
+
+    public TeamMember GetUser()
+    {
+        return _user;
+    }
+
+    public Study GetStudy()
+    {
+        return actualStudy;
     }
 }

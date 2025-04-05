@@ -28,7 +28,7 @@ public class DAOPatientNeo4j : DAOPatient
             ("MATCH (p:Patient)-[r:ENROLLED_IN]->(s:Study)<-[:ASSIGNED_TO]-(t:TeamMember) " +
              "MATCH (p)-[:SCHEDULED]-(v:Visit)" +
              "WHERE t.email = $teamMemberEmail AND r.patientStatus <> 'ended'  " +
-             "RETURN p.name AS name, p.surname AS surname, p.cid AS patientCid, p.sid AS patientSid," +
+             "RETURN p.name AS name, p.surname AS surname, p.id AS patientCid, r.sid AS patientSid," +
              " v.visitDate AS visitDate, v.visitName AS nextVisit, s.name AS studyName, r.patientStatus AS status",
                 new { teamMemberEmail = user.Email });
 
@@ -46,8 +46,13 @@ public class DAOPatientNeo4j : DAOPatient
                 var visit = new Visit(nextVisit, visitDate);
 
                 var patient = new Patient(
-                    name, surname, patientCid, patientSid, studyName, status, visit
+                    name, surname, patientCid, studyName, status, visit
                 );
+                if (patientSid != null)
+                {
+                    patient.PatientStudyId = patientSid;
+                }
+
                 patients.Add(patient);
             });
         }
@@ -58,18 +63,53 @@ public class DAOPatientNeo4j : DAOPatient
 
         return patients;
     }
-    
 
-    public Task CreatePatient(Patient patient)
+
+    public async Task<int> CreatePatient(Patient patient)
     {
-        throw new NotImplementedException();
+        await _neo4jClient.Connect();
+        await using var session = _neo4jClient.GetDriver().AsyncSession(); // Используем AsyncSession()
+
+        try
+        {
+            // CREATE запрос для добавления пациента, исследования и посещения
+            var query = @"
+        CREATE (p:Patient {name: $name, surname: $surname, id: $patientCid})
+        CREATE (s:Study {name: $studyName})
+        CREATE (v:Visit {visitDate: $visitDate, visitName: $nextVisit})
+        CREATE (p)-[:ENROLLED_IN {patientStatus: 'screening'}]->(s)
+        CREATE (p)-[:SCHEDULED]->(v)
+        RETURN COUNT(p) AS addedCount";
+
+            // Выполнение запроса с параметрами
+            var result = await session.RunAsync(query, new
+            {
+                name = patient.Name,
+                surname = patient.Surname,
+                patientCid = patient.PatientHospitalId,
+                studyName = patient.StudyName,
+                visitDate = patient.NextVisit.DateOfVisit,
+                nextVisit = patient.NextVisit.Name
+            });
+
+            // Извлечение результата из запроса
+            var addedCount = await result.SingleAsync(record => record["addedCount"].As<int>());
+
+            return addedCount; // Возвращаем количество добавленных пациентов
+        }
+        catch (Exception ex)
+        {
+            // Обработка ошибок
+            Console.WriteLine($"Error while creating patient: {ex.Message}");
+            return 0; // Возвращаем 0 в случае ошибки
+        }
     }
 
     public Patient SetPatient(Patient patient)
     {
         throw new NotImplementedException();
     }
-
+    
     public int DeletePatient(Patient patient)
     {
         throw new NotImplementedException();

@@ -15,11 +15,11 @@ public class TeamMember : Person
         Role = role;
     }
 
-    public void AddNewPatient()
+    public void AddNewPatient(Patient patient)
     {
-        throw new NotImplementedException();
+        DAOPatientNeo4j daoPatientNeo4J = new DAOPatientNeo4j();
+        daoPatientNeo4J.CreatePatient(patient);
     }
-
     
     public async Task<List<Patient>> GetAllPatients(TeamMember user)
     {

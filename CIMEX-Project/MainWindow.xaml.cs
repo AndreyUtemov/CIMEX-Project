@@ -105,7 +105,7 @@ public partial class MainWindow : Window
        
     }
 
-    private async void Patient_Button_Click(object sender, RoutedEventArgs e)
+    private void Patient_Button_Click(object sender, RoutedEventArgs e)
     {
        Button button = sender as Button;
        Patient patient = (Patient)button.Tag;
@@ -116,4 +116,24 @@ public partial class MainWindow : Window
        this.Hide();
 
     }
+
+    public void AddPatientButtonClick(object sender, RoutedEventArgs routedEventArgs)
+    {
+        TeamMember user = _allProgrammManagement.GetUser();
+        Study study = _allProgrammManagement.GetStudy();
+        NewPatientWindow newPatientWindow = new NewPatientWindow(study, user);
+        newPatientWindow.Owner = this; // Устанавливаем владельца
+        newPatientWindow.ShowDialog(); // О
+    }
+    
+    public void VisitStudyDocumentsPage(object sender, RoutedEventArgs routedEventArgs)
+    {
+        
+    }
+
+    public void ChangeStudyTeam(object sender, RoutedEventArgs routedEventArgs)
+    {
+        
+    }
+    
 }

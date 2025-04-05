@@ -6,7 +6,7 @@ public interface DAOPatient
 {
    Task<List<Patient>> GetAllPatients(TeamMember user);
 
-    Task CreatePatient(Patient patient);
+   Task<int> CreatePatient(Patient patient);
 
     Patient SetPatient(Patient patient);
 
