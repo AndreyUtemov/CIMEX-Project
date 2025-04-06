@@ -15,11 +15,11 @@ public partial class MainWindow : Window
     private static List<Button> _screenedButtons;
     private static List<Button> _includedButtons;
 
-    public MainWindow ()
+    public MainWindow()
     {
         SetButtons();
         InitializeComponent();
-        InitializeUi(); 
+        InitializeUi();
     }
 
     private async Task InitializeUi()
@@ -37,6 +37,7 @@ public partial class MainWindow : Window
         {
             // TODO handle exception
         }
+
         AddUpperButtons(_studyButtons);
         AddMiddleButtons(_screenedButtons);
         AddBottomButtons(_includedButtons);
@@ -55,7 +56,6 @@ public partial class MainWindow : Window
         _studyButtons = buttonList.Studies;
         _screenedButtons = buttonList.Included;
         _includedButtons = buttonList.Included;
-
     }
 
     private void AddUpperButtons(List<Button> upperButtons)
@@ -101,20 +101,18 @@ public partial class MainWindow : Window
         var studyWindowData = _allProgrammManagement.SetStudyWindow(study);
         _includedButtons = studyWindowData.Included;
         _screenedButtons = studyWindowData.Screened;
-       InitializeUi();
-       
+        InitializeUi();
     }
 
     private void Patient_Button_Click(object sender, RoutedEventArgs e)
     {
-       Button button = sender as Button;
-       Patient patient = (Patient)button.Tag;
-       TeamMember user = _allProgrammManagement.GetUserRoleForPatient(patient);
-       PatientWindow patientWindow = new PatientWindow(patient, user);
-       patientWindow.Closed += (s, args) => this.Show(); 
-       patientWindow.Show();
-       this.Hide();
-
+        Button button = sender as Button;
+        Patient patient = (Patient)button.Tag;
+        TeamMember user = _allProgrammManagement.GetUserRoleForPatient(patient);
+        PatientWindow patientWindow = new PatientWindow(patient, user);
+        patientWindow.Closed += (s, args) => this.Show();
+        patientWindow.Show();
+        this.Hide();
     }
 
     public void AddPatientButtonClick(object sender, RoutedEventArgs routedEventArgs)
@@ -125,15 +123,22 @@ public partial class MainWindow : Window
         newPatientWindow.Owner = this; // Устанавливаем владельца
         newPatientWindow.ShowDialog(); // О
     }
-    
+
     public void VisitStudyDocumentsPage(object sender, RoutedEventArgs routedEventArgs)
     {
-        
+        TeamMember user = _allProgrammManagement.GetUser();
+        Study study = _allProgrammManagement.GetStudy();
+        StudyDocuments studyDocuments = new StudyDocuments();
+        studyDocuments.Owner = this; // Устанавливаем владельца
+        studyDocuments.ShowDialog(); // О 
     }
 
     public void ChangeStudyTeam(object sender, RoutedEventArgs routedEventArgs)
     {
-        
+        TeamMember user = _allProgrammManagement.GetUser();
+        Study study = _allProgrammManagement.GetStudy();
+        StudyManagement studyManagement = new StudyManagement();
+        studyManagement.Owner = this; // Устанавливаем владельца
+        studyManagement.ShowDialog(); // О
     }
-    
 }
