@@ -36,9 +36,11 @@ public class TeamMember : Person
         return patientsInStudy;
     }
 
-    public  List<TeamMember> GetTeamList()
+    public async Task<List<TeamMember>> GetTeamList(Study study)
     {
-        throw new NotImplementedException();
+        DAOTeamMemeberNeo4j daoTeamMemeberNeo4J = new DAOTeamMemeberNeo4j();
+        List<TeamMember> teamMembers = await daoTeamMemeberNeo4J.GetAllTeamMembers(study);
+        return teamMembers;
     }
 
     public async Task<List<Study>> GetAllStudy(TeamMember user)

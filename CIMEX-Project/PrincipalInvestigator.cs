@@ -2,11 +2,17 @@ namespace CIMEX_Project;
 
 public class PrincipalInvestigator : Investigator, IPrincipalInvestigator
 {
+    
     public PrincipalInvestigator(string name, string surname, string email, string role) : base(name, surname, email, role)
     {
     }
 
-    public void SetTeamMemeber()
+    public void SetTeamMemeber(TeamMember teamMember, Study study)
+    {
+        
+    }
+
+    public void WithdrawTeamMember(string email, Study study)
     {
         
     }

@@ -1,3 +1,6 @@
+using System.ComponentModel.DataAnnotations;
+using System.DirectoryServices.ActiveDirectory;
+using System.Windows.Documents;
 using Neo4j.Driver;
 
 namespace CIMEX_Project;
@@ -5,6 +8,7 @@ namespace CIMEX_Project;
 public class DAOTeamMemeberNeo4j : DAOTeamMember
  {
     private readonly Neo4jClient _neo4JClient;
+    private DAOTeamMember _daoTeamMemberImplementation;
 
     public DAOTeamMemeberNeo4j()
     {
@@ -68,10 +72,38 @@ public class DAOTeamMemeberNeo4j : DAOTeamMember
         }
     }
     
-    public List<TeamMember> GetALlTeamMembers()
+    public async Task<List<TeamMember>> GetAllTeamMembers(Study study)
     {
-        // MATCH (n:Employee) RETURN 
-        throw new NotImplementedException();
+        await _neo4JClient.Connect();
+        await using var session = _neo4JClient.GetDriver().AsyncSession();
+        List<TeamMember> teamMembers = new List<TeamMember>();
+        string name;
+        string surname;
+        string email;
+        string role;
+        try
+        {
+            var result = await session.RunAsync(
+                "MATCH(t:TeamMember)-[r:ASSIGNED_TO]->(s:Study) WHERE s.name = $studyName" +
+                "RETURN t.name AS Name, t.surname AS Surname, r.roleInStudy AS Role, t.email AS Email"
+                , new { studyName = study.StudyName });
+            await result.ForEachAsync(record =>
+            {
+                name = record["Name"].As<string>();
+                surname = record["Surname"].As<string>();
+                role = record["Role"].As<string>();
+                email = record["Email"].As<string>();
+
+                TeamMember teamMember = new TeamMember(name, surname, email, role);
+                teamMembers.Add(teamMember);
+            });
+            return teamMembers;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
 
     public async Task<bool> IsUserPI(Study study, TeamMember user)
