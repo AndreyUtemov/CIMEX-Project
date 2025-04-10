@@ -25,14 +25,15 @@ public class DAOStudyNeo4j : DAOStudy
         try
         {
             var result = await session.RunAsync("MATCH (s:Study)-[r:ASSIGNED_TO]-(t:TeamMember) WHERE t.email = $teamMemberEmail" +
-                                                " RETURN s.name AS studyName, s.fullname AS fullName, r.roleInStudy AS roleInStudy," +
+                                                " RETURN s.title AS studyName, s.fullName AS fullName, r.role AS roleInStudy," +
                                                 "r.needAttention AS needAttention ", new {teamMemberEmail = user.Email});
             await result.ForEachAsync(record =>
             {
                 var studyName = record["studyName"].As<string>();
                 var fullName = record["fullName"].As<string>();
                 var roleInStudy = record["roleInStudy"].As<string>();
-                var needAttention = record["needAttention"].As<bool>();
+                var needAttention = true;
+                // var needAttention = record["needAttention"].As<bool>();
 
                 Study study = new Study(studyName, fullName, roleInStudy, needAttention);
                 

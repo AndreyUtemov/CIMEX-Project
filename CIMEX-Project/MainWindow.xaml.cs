@@ -137,7 +137,7 @@ public partial class MainWindow : Window
     {
         TeamMember user = _allProgrammManagement.GetUser();
         Study study = _allProgrammManagement.GetStudy();
-        StudyManagement studyManagement = new StudyManagement();
+        StudyManagement studyManagement = new StudyManagement(user, study);
         studyManagement.Owner = this; // Устанавливаем владельца
         studyManagement.ShowDialog(); // О
     }

@@ -23,7 +23,7 @@ public class DAOTeamMemeberNeo4j : DAOTeamMember
         try
         {
             var result = await session.RunAsync(
-                "MATCH (t:TeamMember) WHERE t.email = $eMail RETURN t.crypto AS password",
+                "MATCH (t:TeamMember)-[:HAS_PASSWORD]->(p:Password) WHERE t.email = $eMail RETURN p.password AS password",
                 new { eMail = eMail });
             await result.ForEachAsync(record =>
             {
@@ -54,7 +54,7 @@ public class DAOTeamMemeberNeo4j : DAOTeamMember
         try
         {
             var result = await session.RunAsync("MATCH (t:TeamMember) WHERE t.email = $eMail " +
-                                                "RETURN t.name AS name, t.surname AS surname, t.role AS role"
+                                                "RETURN t.firstName AS name, t.lastName AS surname, t.status AS role"
                 , new { eMail = eMail });
             await result.ForEachAsync(record =>
             {

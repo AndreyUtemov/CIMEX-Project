@@ -9,9 +9,9 @@ public sealed class Neo4jClient : IAsyncDisposable
     private static readonly Lazy<Neo4jClient> _instance = new(() => new Neo4jClient());
     private IDriver? _driver;
     
-    private readonly string _uri = "neo4j+s://44c5ea11.databases.neo4j.io";
+    private readonly string _uri = "neo4j+s://9f104de2.databases.neo4j.io";
     private readonly string _user = "neo4j";
-    private readonly string _password = "cgiBE-jFeSv8at2UxPVjActKM3JggBJWCUEnyOx0eeo";
+    private readonly string _password = "_0xiwq2lxLLaBNHpJrSPmxkrMhU1Xmp3HTzIvQrvy98";
     
     private Neo4jClient() { }
 

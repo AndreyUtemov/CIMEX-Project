@@ -8,12 +8,13 @@ public partial class StudyManagement : Window
     public string StudyTitle { get; set; }
     private PrincipalInvestigator _user;
     private Study _study;
+    private List<TeamMember> _team;
 
     public StudyManagement(TeamMember user, Study study)
     {
         _user = (PrincipalInvestigator?)user;
         _study = study;
-        List<TeamMember> teamOfStudy = _user.GetTeamList(_study);
+        GetTeam();
         InitializeComponent();
         StudyTitle = $"{study.StudyName} team management";
         DataContext = this;
@@ -55,5 +56,11 @@ public partial class StudyManagement : Window
                 TeamMembersList.Items.Refresh(); // Обновляем отображение
             }
         }
+    }
+
+    private async Task GetTeam()
+    {
+        List<TeamMember> teamOfStudy = await _user.GetTeamList(_study);
+        _team = teamOfStudy;
     }
 }
