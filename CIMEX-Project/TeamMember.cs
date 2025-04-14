@@ -6,8 +6,10 @@ public class TeamMember : Person
 {
     public string Email { get; private set; }
     public string Role { get; private set; }
-    
 
+    public TeamMember() : base("", "")
+    {
+    }
 
     public TeamMember(string name, string surname, string email, string role) : base(name, surname)
     {
@@ -45,8 +47,13 @@ public class TeamMember : Person
 
     public async Task<List<Study>> GetAllStudy(TeamMember user)
     {
+        Console.WriteLine("GetAllStudyStrarted");
         DAOStudyNeo4j daoStudyNeo4J = new DAOStudyNeo4j();
         List<Study> studies = await daoStudyNeo4J.GetAllStudy(user);
+        foreach (var study in studies)
+        {
+            Console.WriteLine(study.StudyName);
+        }
         return studies;
     }
 

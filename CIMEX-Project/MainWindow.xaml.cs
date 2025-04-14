@@ -10,7 +10,7 @@ namespace CIMEX_Project;
 
 public partial class MainWindow : Window
 {
-    private static AllProgrammManagement _allProgrammManagement = new AllProgrammManagement();
+    private static MainWindowManagement _mainWindowManagement = new MainWindowManagement();
     private static List<Button> _studyButtons;
     private static List<Button> _screenedButtons;
     private static List<Button> _includedButtons;
@@ -29,13 +29,13 @@ public partial class MainWindow : Window
             DataContext = new MainViewModel
             {
                 Date = DateTime.Now.ToString("dd MMMM yyyy"),
-                LeftTitle = _allProgrammManagement.GetLeftTitle(),
-                RightTitle = _allProgrammManagement.GetRightTitle()
+                LeftTitle = _mainWindowManagement.GetLeftTitle(),
+                RightTitle = _mainWindowManagement.GetRightTitle()
             };
         }
         catch (Exception e)
         {
-            // TODO handle exception
+            Console.WriteLine("Exception in IntializeUI");
         }
 
         AddUpperButtons(_studyButtons);
@@ -52,10 +52,14 @@ public partial class MainWindow : Window
 
     private async Task SetButtons()
     {
-        var buttonList = await _allProgrammManagement.ProgrammStart();
+        Console.WriteLine("We setting buttonns");
+        var buttonList = await _mainWindowManagement.ProgrammStart();
         _studyButtons = buttonList.Studies;
-        _screenedButtons = buttonList.Included;
+        Console.WriteLine("Study buttons ready");
+        _screenedButtons = buttonList.Screened;
+        Console.WriteLine("Screned buttons ready");
         _includedButtons = buttonList.Included;
+        Console.WriteLine("Included butttons ready");
     }
 
     private void AddUpperButtons(List<Button> upperButtons)
@@ -98,7 +102,7 @@ public partial class MainWindow : Window
     {
         Button button = sender as Button;
         Study study = (Study)button.Tag;
-        var studyWindowData = _allProgrammManagement.SetStudyWindow(study);
+        var studyWindowData = _mainWindowManagement.SetStudyWindow(study);
         _includedButtons = studyWindowData.Included;
         _screenedButtons = studyWindowData.Screened;
         InitializeUi();
@@ -108,7 +112,7 @@ public partial class MainWindow : Window
     {
         Button button = sender as Button;
         Patient patient = (Patient)button.Tag;
-        TeamMember user = _allProgrammManagement.GetUserRoleForPatient(patient);
+        TeamMember user = _mainWindowManagement.GetUserRoleForPatient(patient);
         PatientWindow patientWindow = new PatientWindow(patient, user);
         patientWindow.Closed += (s, args) => this.Show();
         patientWindow.Show();
@@ -117,8 +121,8 @@ public partial class MainWindow : Window
 
     public void AddPatientButtonClick(object sender, RoutedEventArgs routedEventArgs)
     {
-        TeamMember user = _allProgrammManagement.GetUser();
-        Study study = _allProgrammManagement.GetStudy();
+        TeamMember user = _mainWindowManagement.GetUser();
+        Study study = _mainWindowManagement.GetStudy();
         NewPatientWindow newPatientWindow = new NewPatientWindow(study, user);
         newPatientWindow.Owner = this; // Устанавливаем владельца
         newPatientWindow.ShowDialog(); // О
@@ -126,8 +130,8 @@ public partial class MainWindow : Window
 
     public void VisitStudyDocumentsPage(object sender, RoutedEventArgs routedEventArgs)
     {
-        TeamMember user = _allProgrammManagement.GetUser();
-        Study study = _allProgrammManagement.GetStudy();
+        TeamMember user = _mainWindowManagement.GetUser();
+        Study study = _mainWindowManagement.GetStudy();
         StudyDocuments studyDocuments = new StudyDocuments();
         studyDocuments.Owner = this; // Устанавливаем владельца
         studyDocuments.ShowDialog(); // О 
@@ -135,8 +139,8 @@ public partial class MainWindow : Window
 
     public void ChangeStudyTeam(object sender, RoutedEventArgs routedEventArgs)
     {
-        TeamMember user = _allProgrammManagement.GetUser();
-        Study study = _allProgrammManagement.GetStudy();
+        TeamMember user = _mainWindowManagement.GetUser();
+        Study study = _mainWindowManagement.GetStudy();
         StudyManagement studyManagement = new StudyManagement(user, study);
         studyManagement.Owner = this; // Устанавливаем владельца
         studyManagement.ShowDialog(); // О

@@ -18,6 +18,7 @@ public class DAOStudyNeo4j : DAOStudy
 
     public async Task<List<Study>> GetAllStudy(TeamMember user)
     {
+        Console.WriteLine($"We are in GetAlStudy with {user.Email}");
         await _neo4jClient.Connect();
         await using var session = _neo4jClient.GetDriver().AsyncSession(); // Используем AsyncSession()
         var studies = new List<Study>();
@@ -25,18 +26,17 @@ public class DAOStudyNeo4j : DAOStudy
         try
         {
             var result = await session.RunAsync("MATCH (s:Study)-[r:ASSIGNED_TO]-(t:TeamMember) WHERE t.email = $teamMemberEmail" +
-                                                " RETURN s.title AS studyName, s.fullName AS fullName, r.role AS roleInStudy," +
-                                                "r.needAttention AS needAttention ", new {teamMemberEmail = user.Email});
+                                                " RETURN s.title AS studyName, s.fullName AS fullName, r.role AS roleInStudy", new {teamMemberEmail = user.Email});
             await result.ForEachAsync(record =>
             {
                 var studyName = record["studyName"].As<string>();
                 var fullName = record["fullName"].As<string>();
                 var roleInStudy = record["roleInStudy"].As<string>();
-                var needAttention = true;
+                // bool needAttention = true;
                 // var needAttention = record["needAttention"].As<bool>();
-
-                Study study = new Study(studyName, fullName, roleInStudy, needAttention);
-                
+Console.WriteLine(studyName);
+                Study study = new Study(studyName, fullName, roleInStudy, true);
+                Console.WriteLine(study.StudyName);
                 studies.Add(study);
             });
         }

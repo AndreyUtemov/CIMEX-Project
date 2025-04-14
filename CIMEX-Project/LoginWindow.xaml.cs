@@ -19,8 +19,8 @@ public partial class LoginWindow : Window
 
         if (accessApproved)
         {
-            AllProgrammManagement allProgrammManagement = new AllProgrammManagement();
-            await allProgrammManagement.SetUser(userLogin);
+            MainWindowManagement mainWindowManagement = new MainWindowManagement();
+            await mainWindowManagement.SetUser(userLogin);
             MainWindow mainWindow = new MainWindow();
             mainWindow.Show();
             this.Close();

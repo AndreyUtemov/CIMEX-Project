@@ -25,11 +25,10 @@ public class DAOPatientNeo4j : DAOPatient
         try
         {
             var result = await session.RunAsync
-            ("MATCH (p:Patient)-[r:ENROLLED_IN]->(s:Study)<-[:ASSIGNED_TO]-(t:TeamMember) " +
-             "MATCH (p)-[:SCHEDULED]-(v:Visit)" +
-             "WHERE t.email = $teamMemberEmail AND r.patientStatus <> 'ended'  " +
-             "RETURN p.name AS name, p.surname AS surname, p.id AS patientCid, r.sid AS patientSid," +
-             " v.visitDate AS visitDate, v.visitName AS nextVisit, s.name AS studyName, r.patientStatus AS status",
+            ("MATCH (p:Patient)-[r:PARTICIPATES_IN]->(s:Study)<-[:ASSIGNED_TO]-(t:TeamMember)" +
+              "WHERE t.email = $teamMemberEmail AND r.status <> 'Ended' OPTIONAL MATCH (p)-[:HAS_VISIT]->(v:Visit) RETURN p.firstName AS name, " +
+              "p.lastName AS surname, p.clinicalId AS clinicalId, r.studyId AS studyId, " +
+             " v.date AS visitDate, v.name AS nextVisit, s.name AS studyName, r.status AS status",
                 new { teamMemberEmail = user.Email });
 
             await result.ForEachAsync(record =>

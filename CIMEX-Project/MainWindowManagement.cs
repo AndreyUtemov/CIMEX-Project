@@ -6,7 +6,7 @@ using MongoDB.Driver.Linq;
 
 namespace CIMEX_Project;
 
-public class AllProgrammManagement
+public class MainWindowManagement
 {
     private static ButtonFactory _buttonFactory = new ButtonFactory();
     private static TeamMember _user;
@@ -18,10 +18,11 @@ public class AllProgrammManagement
 
     public async Task SetUser(string eMail)
     {
+        Console.WriteLine($"{eMail} is here");
         try
         {
             DAOTeamMemeberNeo4j _daoTeamMemeberNeo4J = new DAOTeamMemeberNeo4j();
-            _user = await _daoTeamMemeberNeo4J.GetTeamMemberByLogin(eMail);
+            _user = await _daoTeamMemeberNeo4J.GetTeamMember(eMail);
         }
         catch (Exception e)
         {
@@ -32,17 +33,24 @@ public class AllProgrammManagement
 
     public async Task<(List<Button> Studies, List<Button> Screened, List<Button> Included)> ProgrammStart()
     {
+        Console.WriteLine("We are in Program start");
         _studies = await _user.GetAllStudy(_user);
+        foreach (Study study in _studies)
+        {
+            Console.WriteLine(study.StudyName);
+        }
         _patients = await _user.GetAllPatients(_user);
         var separatedPatientLists = SeparatePatients(_patients);
         List<Button> studyButtons = CreateStudyButtons(_studies);
-        List<Button> screenedPatientsButton = CreatePatientsButtons(separatedPatientLists.Screened);
+       List<Button> screenedPatientsButton = CreatePatientsButtons(separatedPatientLists.Screened);
         List<Button> includedPetientsButton = CreatePatientsButtons(separatedPatientLists.Included);
         return (studyButtons, screenedPatientsButton, includedPetientsButton);
     }
 
     private List<Button> CreateStudyButtons(List<Study> studyList)
     {
+        Console.WriteLine("Study Buttons Creating");
+        
         List<Button> buttonList = _buttonFactory.CreateStudyButtons(studyList);
         return buttonList;
     }
@@ -93,11 +101,11 @@ public class AllProgrammManagement
         {
             if (patient.Status == "screening")
             {
-                includedPatients.Add(patient);
+                screenedPatients.Add(patient);
             }
             else
             {
-                screenedPatients.Add(patient);
+                includedPatients.Add(patient);
             }
         }
 

@@ -8,7 +8,7 @@ public interface DAOTeamMember
 
     Task<bool> IsUserPI(Study study, TeamMember user);
 
-    Task<TeamMember> GetTeamMemberByLogin(string eMail);
+    Task<TeamMember> GetTeamMember(string eMail);
 
     void CreateInvestigator(Investigator investigator);
 

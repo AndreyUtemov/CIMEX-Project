@@ -1,5 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.DirectoryServices.ActiveDirectory;
+using System.Net.Http;
+using System.Text.Json;
 using System.Windows.Documents;
 using Neo4j.Driver;
 
@@ -7,13 +9,8 @@ namespace CIMEX_Project;
 
 public class DAOTeamMemeberNeo4j : DAOTeamMember
  {
-    private readonly Neo4jClient _neo4JClient;
+    private static readonly Neo4jClient _neo4JClient = Neo4jClient.Instance;
     private DAOTeamMember _daoTeamMemberImplementation;
-
-    public DAOTeamMemeberNeo4j()
-    {
-        _neo4JClient = Neo4jClient.Instance;
-    }
     
     public async Task<bool> CheckUserPassword(string eMail, string password)
     {
@@ -43,27 +40,27 @@ public class DAOTeamMemeberNeo4j : DAOTeamMember
         }
     }
     
-    
-    public async Task<TeamMember> GetTeamMemberByLogin(string eMail)
+    public async Task<TeamMember> GetTeamMember(string eMail)
     {
-        await _neo4JClient.Connect();
-        await using var session = _neo4JClient.GetDriver().AsyncSession();
-        var name = "";
-        var surname = "";
-        var role = "";
-        try
+      try
         {
-            var result = await session.RunAsync("MATCH (t:TeamMember) WHERE t.email = $eMail " +
-                                                "RETURN t.firstName AS name, t.lastName AS surname, t.status AS role"
-                , new { eMail = eMail });
-            await result.ForEachAsync(record =>
+            string requestUrl = $"team/{eMail}";
+            HttpResponseMessage responseMessage = await ApiClient.Instance.GetAsync(requestUrl);
+            Console.WriteLine($"Request answer {responseMessage.StatusCode}");
+            if(!responseMessage.IsSuccessStatusCode)
             {
-                name = record["name"].As<string>();
-                surname = record["surname"].As<string>();
-                role = record["role"].As<string>();
-
+                Console.WriteLine("Pechalka");
+            }
+           
+            string jsonString = await responseMessage.Content.ReadAsStringAsync();
+           
+            Console.WriteLine($"Recived JSON: {jsonString}");
+            TeamMember? teamMember = JsonSerializer.Deserialize<TeamMember>(jsonString, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
             });
-            return new TeamMember(name, surname, eMail, role);
+            return teamMember;
+
         }
         catch (Exception e)
         {
