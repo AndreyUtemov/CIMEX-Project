@@ -59,6 +59,7 @@ public class DAOTeamMemeberNeo4j : DAOTeamMember
             {
                 PropertyNameCaseInsensitive = true
             });
+            teamMember.Email = eMail;
             return teamMember;
 
         }

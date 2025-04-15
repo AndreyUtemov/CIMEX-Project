@@ -17,9 +17,14 @@ public partial class MainWindow : Window
 
     public MainWindow()
     {
-        SetButtons();
         InitializeComponent();
-        InitializeUi();
+        Loaded += MainWindow_Loaded; // ждём полной загрузки окна
+    }
+
+    private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
+    {
+        await SetButtons();          // корректно дожидаемся кнопок
+        await InitializeUi();        // и только потом инициализируем интерфейс
     }
 
     private async Task InitializeUi()
@@ -65,9 +70,11 @@ public partial class MainWindow : Window
     private void AddUpperButtons(List<Button> upperButtons)
     {
         UpperPanel.Children.Clear();
+        Console.WriteLine("Creating buttons for ui");
 
         foreach (Button button in upperButtons)
         {
+            Console.WriteLine($"Create button {button.Content.ToString()}");
             button.Click -= Study_Button_Click;
             button.Click += Study_Button_Click;
             UpperPanel.Children.Add(button);

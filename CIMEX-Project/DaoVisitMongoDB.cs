@@ -31,13 +31,17 @@ public class DaoVisitMongoDb
 
     public async Task<List<Visit>> GetPatientVisits(string patientId)
     {
+        Console.WriteLine("Start DaoVisitMongoDB");
+        
         if (string.IsNullOrEmpty(patientId))
             throw new ArgumentNullException(nameof(patientId), "Идентификатор пациента не может быть пустым.");
 
         try
         {
-            string requestUrl = $"{BaseUrl}/patient-visits/{patientId}";
-            HttpResponseMessage response = await _httpClient.GetAsync(requestUrl);
+            string requestUrl = $"patient-visits/{patientId}";
+            HttpResponseMessage response = await ApiClient.Instance.GetAsync(requestUrl);
+            
+            Console.WriteLine($"Mongo responce {response.ToString()}");
 
             if (!response.IsSuccessStatusCode)
             {

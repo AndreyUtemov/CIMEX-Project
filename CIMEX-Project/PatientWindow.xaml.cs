@@ -23,15 +23,15 @@ public partial class PatientWindow : Window
         try
         {
             PatientWindowManagement _patientWindowManagement = new PatientWindowManagement();
-            Console.WriteLine("GO GO");
+            Console.WriteLine("try to get visit buttons");
             var allVisitButtons = await _patientWindowManagement.GetVisitButtons(_patient);
-            Console.WriteLine("GO GO GO");
+            Console.WriteLine("We have visit buttons and try to test it");
             foreach (var button in allVisitButtons)
             {
-                Console.WriteLine("Button is here");
+                Console.WriteLine($"Button {button.Content} is here");
             }
 
-            Console.WriteLine("GO");
+            Console.WriteLine("We try to place a buttons");
             await AddButtons(allVisitButtons);
         }
         catch (Exception e)
@@ -56,6 +56,8 @@ public partial class PatientWindow : Window
 
         foreach (Button button in buttonList)
         {
+            Console.WriteLine($"Button {button.Content} placing");
+            
             if (!_visitscreen)
             {
             button.Click -= VisitButtonClick;

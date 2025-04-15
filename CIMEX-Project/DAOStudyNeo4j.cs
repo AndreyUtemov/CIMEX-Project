@@ -1,3 +1,5 @@
+using System.Net.Http;
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Neo4j.Driver;
 
@@ -16,38 +18,48 @@ public class DAOStudyNeo4j : DAOStudy
     {
     }
 
-    public async Task<List<Study>> GetAllStudy(TeamMember user)
+    public async Task<List<Study>> GetAllStudy(string eMail)
     {
-        Console.WriteLine($"We are in GetAlStudy with {user.Email}");
-        await _neo4jClient.Connect();
-        await using var session = _neo4jClient.GetDriver().AsyncSession(); // Используем AsyncSession()
-        var studies = new List<Study>();
-
+        Console.WriteLine($"We are here with {eMail}");
         try
         {
-            var result = await session.RunAsync("MATCH (s:Study)-[r:ASSIGNED_TO]-(t:TeamMember) WHERE t.email = $teamMemberEmail" +
-                                                " RETURN s.title AS studyName, s.fullName AS fullName, r.role AS roleInStudy", new {teamMemberEmail = user.Email});
-            await result.ForEachAsync(record =>
+            string requestUrl = $"studies/{Uri.EscapeDataString(eMail)}";
+
+
+            HttpResponseMessage responseMessage = await ApiClient.Instance.GetAsync(requestUrl);
+
+            Console.WriteLine(responseMessage.ToString());
+
+            Console.WriteLine($"Request answer {responseMessage.StatusCode}");
+
+            if (!responseMessage.IsSuccessStatusCode)
             {
-                var studyName = record["studyName"].As<string>();
-                var fullName = record["fullName"].As<string>();
-                var roleInStudy = record["roleInStudy"].As<string>();
-                // bool needAttention = true;
-                // var needAttention = record["needAttention"].As<bool>();
-Console.WriteLine(studyName);
-                Study study = new Study(studyName, fullName, roleInStudy, true);
-                Console.WriteLine(study.StudyName);
-                studies.Add(study);
+                Console.WriteLine("Pechalka");
+            }
+
+            string jsonString = await responseMessage.Content.ReadAsStringAsync();
+
+            Console.WriteLine($"Получен JSON: {jsonString}");
+
+            List<Study>? studies = JsonSerializer.Deserialize<List<Study>?>(jsonString, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
             });
+
+            foreach (var study in studies)
+            {
+                Console.WriteLine($"Name: {study.StudyName} Surname:  {study.FullName}  Role: {study.RoleOfUser}");
+            }
+
+            return studies;
         }
         catch (Exception e)
         {
-            Console.WriteLine($"Error fetching studies: {e.Message}");
+            Console.WriteLine(e);
+            throw;
         }
-
-        return studies;
     }
-    
+
     public async Task<bool> GetUserRoleInStudy(TeamMember user)
     {
         await _neo4jClient.Connect();
@@ -56,12 +68,10 @@ Console.WriteLine(studyName);
 
         try
         {
-            var result = await session.RunAsync("MATCH (s:Study)-[r:ASSIGNED_TO]-(t:TeamMember) WHERE t.email = $teamMemberEmail" +
-                                                " RETURN r.isPrincipal AS isUserPI", new {teamMemberEmail = user.Email});
-            await result.ForEachAsync(record =>
-            {
-                isUserPI = record["isUserPI"].As<bool>();
-            });
+            var result = await session.RunAsync(
+                "MATCH (s:Study)-[r:ASSIGNED_TO]-(t:TeamMember) WHERE t.email = $teamMemberEmail" +
+                " RETURN r.isPrincipal AS isUserPI", new { teamMemberEmail = user.Email });
+            await result.ForEachAsync(record => { isUserPI = record["isUserPI"].As<bool>(); });
         }
         catch (Exception e)
         {
@@ -70,7 +80,7 @@ Console.WriteLine(studyName);
 
         return isUserPI;
     }
-    
+
     public Task<IActionResult> CreateStudy(Study study)
     {
         throw new NotImplementedException();

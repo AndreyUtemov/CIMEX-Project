@@ -1,3 +1,5 @@
+using System.Net.Http;
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Neo4j.Driver;
 
@@ -17,52 +19,51 @@ public class DAOPatientNeo4j : DAOPatient
     {
     }
 
-    public async Task<List<Patient>> GetAllPatients(TeamMember user)
+    public async Task<List<Patient>> GetAllPatients(string eMail)
     {
-        await _neo4jClient.Connect();
-        await using var session = _neo4jClient.GetDriver().AsyncSession(); // Используем AsyncSession()
-        var patients = new List<Patient>();
+        Console.WriteLine("Get all patients started");
+
         try
         {
-            var result = await session.RunAsync
-            ("MATCH (p:Patient)-[r:PARTICIPATES_IN]->(s:Study)<-[:ASSIGNED_TO]-(t:TeamMember)" +
-              "WHERE t.email = $teamMemberEmail AND r.status <> 'Ended' OPTIONAL MATCH (p)-[:HAS_VISIT]->(v:Visit) RETURN p.firstName AS name, " +
-              "p.lastName AS surname, p.clinicalId AS clinicalId, r.studyId AS studyId, " +
-             " v.date AS visitDate, v.name AS nextVisit, s.name AS studyName, r.status AS status",
-                new { teamMemberEmail = user.Email });
+            string requestUrl = $"patients/team/{eMail}";
 
-            await result.ForEachAsync(record =>
+
+            HttpResponseMessage responseMessage = await ApiClient.Instance.GetAsync(requestUrl);
+
+            Console.WriteLine(responseMessage.ToString());
+
+            Console.WriteLine($"Request answer {responseMessage.StatusCode}");
+
+            if (!responseMessage.IsSuccessStatusCode)
             {
-                var name = record["name"].As<string>();
-                var surname = record["surname"].As<string>();
-                var patientCid = record["patientCid"].As<string>();
-                var patientSid = record["patientSid"].As<string>();
-                var nextVisit = record["nextVisit"].As<string>();
-                var visitDate = record["visitDate"].As<DateTime>();
-                var status = record["status"].As<string>();
-                var studyName = record["studyName"].As<string>();
+                Console.WriteLine("Pechalka");
+            }
 
-                var visit = new Visit(nextVisit, visitDate);
+            string jsonString = await responseMessage.Content.ReadAsStringAsync();
 
-                var patient = new Patient(
-                    name, surname, patientCid, studyName, status, visit
-                );
-                if (patientSid != null)
-                {
-                    patient.PatientStudyId = patientSid;
-                }
+            Console.WriteLine($"Получен JSON: {jsonString}");
 
-                patients.Add(patient);
+            List<Patient>? patients = JsonSerializer.Deserialize<List<Patient>?>(jsonString, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
             });
+
+
+            foreach (var patient in patients)
+            {
+                Console.WriteLine(
+                    $"Name: {patient.StudyName} Surname:  {patient.Surname}  Role: {patient.PatientStudyId}" +
+                    $"Study {patient.StudyName} Visit{patient.NextVisit.Name}  {patient.NextVisit.DateOfVisit.ToString("dd.MM.yyyy")}");
+            }
+
+            return patients;
         }
         catch (Exception e)
         {
-            Console.WriteLine($"Error fetching studies: {e.Message}");
+            Console.WriteLine(e);
+            throw;
         }
-
-        return patients;
     }
-
 
     public async Task<int> CreatePatient(Patient patient)
     {
@@ -108,7 +109,7 @@ public class DAOPatientNeo4j : DAOPatient
     {
         throw new NotImplementedException();
     }
-    
+
     public int DeletePatient(Patient patient)
     {
         throw new NotImplementedException();

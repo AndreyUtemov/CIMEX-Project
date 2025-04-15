@@ -4,7 +4,7 @@ namespace CIMEX_Project;
 
 public interface DAOStudy
 {
-    Task<List<Study>> GetAllStudy(TeamMember user);
+    Task<List<Study>> GetAllStudy(string eMail);
     
     Task<IActionResult> CreateStudy(Study study);
 

@@ -9,9 +9,11 @@ public class ButtonFactory
 {
     public List<Button> CreatePatientButtons(List<Patient> patientList)
     {
+        Console.WriteLine("Creating patient buttons");
         List<Button> buttonList = new List<Button>();
         foreach (Patient patient in patientList)
         {
+            Console.WriteLine($"Creating patient {patient.PatientHospitalId}  {patient.Surname}");
             var button = new Button()
             {
                 Content = $"{patient.Surname}\n{patient.Name}\n\n{patient.NextVisit.DateOfVisit.ToString("dd.MM.yyyy")}",
@@ -31,10 +33,12 @@ public class ButtonFactory
 
     public List<Button> CreateStudyButtons(List<Study> studyList)
     {
+        Console.WriteLine("Study button factory");
         List<Button> buttonList = new List<Button>();
 
         foreach (Study study in studyList)
         {
+            Console.WriteLine($" Create button{study.StudyName}");
             var button = new Button()
             {
                 Content = $"{study.StudyName}\n{study.FullName}",

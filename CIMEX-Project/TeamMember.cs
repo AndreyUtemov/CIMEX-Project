@@ -4,8 +4,8 @@ namespace CIMEX_Project;
 
 public class TeamMember : Person
 {
-    public string Email { get; private set; }
-    public string Role { get; private set; }
+    public string Email { get;  set; }
+    public string Role { get;  set; }
 
     public TeamMember() : base("", "")
     {
@@ -26,7 +26,8 @@ public class TeamMember : Person
     public async Task<List<Patient>> GetAllPatients(TeamMember user)
     {
         DAOPatientNeo4j daoPatientNeo4J = new DAOPatientNeo4j();
-        List<Patient> patients = await daoPatientNeo4J.GetAllPatients(user);
+        Console.WriteLine("Try to get all patients");
+        List<Patient> patients = await daoPatientNeo4J.GetAllPatients(user.Email);
         return patients;
     }
 
@@ -45,11 +46,11 @@ public class TeamMember : Person
         return teamMembers;
     }
 
-    public async Task<List<Study>> GetAllStudy(TeamMember user)
+    public async Task<List<Study>> GetAllStudy(string eMail)
     {
-        Console.WriteLine("GetAllStudyStrarted");
+        Console.WriteLine($"GetAllStudyStrarted {eMail}");
         DAOStudyNeo4j daoStudyNeo4J = new DAOStudyNeo4j();
-        List<Study> studies = await daoStudyNeo4J.GetAllStudy(user);
+        List<Study> studies = await daoStudyNeo4J.GetAllStudy(eMail);
         foreach (var study in studies)
         {
             Console.WriteLine(study.StudyName);

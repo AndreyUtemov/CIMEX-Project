@@ -4,7 +4,7 @@ namespace CIMEX_Project;
 
 public interface DAOPatient
 {
-   Task<List<Patient>> GetAllPatients(TeamMember user);
+    Task<List<Patient>> GetAllPatients(string eMail);
 
    Task<int> CreatePatient(Patient patient);
 

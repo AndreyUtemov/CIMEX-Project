@@ -8,6 +8,10 @@ public class Visit
     public string Status { get; set; }
     public List<string> Tasks { get;  set; }
     // public bool DespenceMedication { get;  set; }
+    
+    public Visit(){}
+      
+    
     public Visit(string name, DateTime dateOfVisit)
     {
         Name = name;

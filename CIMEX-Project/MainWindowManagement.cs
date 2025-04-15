@@ -23,6 +23,7 @@ public class MainWindowManagement
         {
             DAOTeamMemeberNeo4j _daoTeamMemeberNeo4J = new DAOTeamMemeberNeo4j();
             _user = await _daoTeamMemeberNeo4J.GetTeamMember(eMail);
+            Console.WriteLine(_user.Surname);
         }
         catch (Exception e)
         {
@@ -33,15 +34,21 @@ public class MainWindowManagement
 
     public async Task<(List<Button> Studies, List<Button> Screened, List<Button> Included)> ProgrammStart()
     {
-        Console.WriteLine("We are in Program start");
-        _studies = await _user.GetAllStudy(_user);
+        Console.WriteLine($"We are in Program start for {_user.Surname}");
+        _studies = await _user.GetAllStudy(_user.Email);
+      
         foreach (Study study in _studies)
         {
-            Console.WriteLine(study.StudyName);
+            Console.WriteLine($"check list {study.StudyName}");
+        }
+        List<Button> studyButtons = CreateStudyButtons(_studies);
+        foreach (var but in studyButtons)
+        {
+            Console.WriteLine(but.Content.ToString());
         }
         _patients = await _user.GetAllPatients(_user);
         var separatedPatientLists = SeparatePatients(_patients);
-        List<Button> studyButtons = CreateStudyButtons(_studies);
+        
        List<Button> screenedPatientsButton = CreatePatientsButtons(separatedPatientLists.Screened);
         List<Button> includedPetientsButton = CreatePatientsButtons(separatedPatientLists.Included);
         return (studyButtons, screenedPatientsButton, includedPetientsButton);
