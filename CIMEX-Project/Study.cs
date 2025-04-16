@@ -5,6 +5,7 @@ public class Study
     public string StudyName { get;  set; }
     public string FullName { get;  set; }
     public string RoleOfUser { get;  set; }
+    public PrincipalInvestigator PrincipalInvestigator { get; set; }
     public bool NeedAttention { get;  set; }
 
     public Study()

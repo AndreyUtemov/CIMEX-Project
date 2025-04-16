@@ -15,19 +15,29 @@ public partial class LoginWindow : Window
         
         string userLogin = LoginBox.Text;
         string password = PasswordBox.Password;
-        bool accessApproved = await CheckUser(userLogin, password);
 
-        if (accessApproved)
+        if (userLogin == "admin" && password == "12345678")
         {
-            MainWindowManagement mainWindowManagement = new MainWindowManagement();
-            await mainWindowManagement.SetUser(userLogin);
-            MainWindow mainWindow = new MainWindow();
-            mainWindow.Show();
+            AdminWindow adminWindow = new AdminWindow();
+            adminWindow.Show();
             this.Close();
         }
         else
         {
-            MessageBox.Show("Wrong Login or Password", "Fail", MessageBoxButton.OK, MessageBoxImage.Error);
+            bool accessApproved = await CheckUser(userLogin, password);
+
+            if (accessApproved)
+            {
+                MainWindowManagement mainWindowManagement = new MainWindowManagement();
+                await mainWindowManagement.SetUser(userLogin);
+                MainWindow mainWindow = new MainWindow();
+                mainWindow.Show();
+                this.Close();
+            }
+            else
+            {
+                MessageBox.Show("Wrong Login or Password", "Fail", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
     
@@ -46,4 +56,5 @@ public partial class LoginWindow : Window
         }
     }
 }
+
 
