@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:CIMEX_Project"
         xmlns:wpf="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
-        Title="AdminWindow" Height="900" Width="600">
+        Title="AdminWindow" Height="600" Width="900">
     <Grid>
         <Grid x:Name="grid" Margin="15" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Grid.RowDefinitions>
@@ -16,20 +16,39 @@
                 <RowDefinition Height="50"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="450"/>
                 <ColumnDefinition Width="*"/>
-               
+                <ColumnDefinition Width="150"/>
             </Grid.ColumnDefinitions>
 
             
-            <!-- Upper Panel with names and study -->
             <TextBlock Grid.Row="0" Grid.Column="0"  FontSize="42" FontWeight="Bold" FontFamily="Arial" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#0E239A" Text="Admin Window" />
             <TextBlock Grid.Row="3" Grid.Column="0" FontSize="12" TextAlignment="Left" VerticalAlignment="Bottom" Margin="30,0,0,0" Foreground="#01B0FF">CIMEX by SoftPanda Solutions</TextBlock>
             <TextBlock Grid.Row="3" Grid.Column="1" FontSize="12" TextAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,30,0"  Foreground="#01B0FF">V0.1.0</TextBlock>
             <TextBlock Grid.Row="1" Grid.Column="0" FontSize="28" TextAlignment="Center" VerticalAlignment="Top" FontWeight="Bold" Padding="30,0,0,0" Foreground="#0E239A" Text="Studies"/>
             <Image Grid.Row="0" Grid.Column="1" Height="120" Source="Logo.png"></Image>
-            <ScrollViewer Grid.Row="2" Grid.Column="0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-                <WrapPanel x:Name="StudyPanel" Orientation="Vertical"></WrapPanel>
+            <ScrollViewer Grid.Row="1" Grid.Column="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                <ListView x:Name="StudiesList" ItemsSource="{Binding StudyCollection}">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Study" Width="200" DisplayMemberBinding="{Binding StudyName}" />
+                            <GridViewColumn Header="Full Name" Width="400">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding FullName}" TextWrapping="Wrap" />
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="Add" Width="Auto">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Content="Edit" Click="EditButtonClick" Width="60" Height="30"
+                                                Foreground="#FAFAFA" Background="#01B0FF" Tag="{Binding}" />
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
             </ScrollViewer>
             <Button Grid.Row="1" Grid.Column="1" Height="60" Width="60" Background="Transparent" BorderThickness="0" VerticalAlignment="Center"
                     HorizontalAlignment="Center" Padding="0" Click="OpenCreateStudyWindow">

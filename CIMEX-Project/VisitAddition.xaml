@@ -1,0 +1,82 @@
+<Window x:Class="CIMEX_Project.VisitAddition"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:local="clr-namespace:CIMEX_Project"
+        mc:Ignorable="d"
+        Title="VisitAddition" Height="450" Width="800">
+     
+    <Window.Resources>
+        <Style TargetType="Label">
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Foreground" Value="#0E239A" />
+            <Setter Property="FontSize" Value="18" />
+            <Setter Property="Margin" Value="7" />
+            <Setter Property="HorizontalAlignment" Value="Left"></Setter>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="120" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="150" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Image Grid.Row="0" Grid.Column="0" Height="90" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10"
+               Source="Logo.png">
+        </Image>
+        <TextBlock Grid.Row="0" Grid.Column="1" TextAlignment="Center" VerticalAlignment="Center" Margin="10"
+                   FontSize="24" Foreground="#0E239A" FontWeight="Bold" Text="Add Visit"/>
+        <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="10,10,10,40">
+           <Grid Margin="10" HorizontalAlignment="Stretch" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="120"/> 
+                    <ColumnDefinition Width="*"/> 
+                </Grid.ColumnDefinitions>
+                <Label  Grid.Column="0" Content="Title:" Target="{Binding ElementName=TitleBox}" />
+                <TextBox Grid.Column="1" x:Name="TitleBox" FontWeight="Medium" Margin="5"
+                         BorderThickness="2" BorderBrush="#0E239A"/>
+            </Grid>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Label  Content="Interval after randomization:" Target="{Binding ElementName=TitleBox}" />
+                <TextBox  x:Name="IntervalBox" FontWeight="Medium" Width="40" Margin="5"
+                         BorderThickness="2" BorderBrush="#0E239A"/>
+                <ComboBox x:Name="UnitBox"
+                          Height="35" Width="150" FontWeight="Medium" Margin="5"
+                          SelectedIndex="-1" BorderThickness="2" BorderBrush="#0E239A"
+                          ItemsSource="{Binding TimeIntervals}"/>
+                <Label  Content="Time window:" Target="{Binding ElementName=TitleBox}" />
+                <TextBox  x:Name="TimeWindowBox" FontWeight="Medium" Width="40" Margin="5"
+                          BorderThickness="2" BorderBrush="#0E239A"/>
+                </StackPanel>
+            <ListView x:Name="TaskList" ItemsSource="{Binding Tasks}" Margin="10" BorderThickness="0">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}" FontSize="16" Padding="5"/>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <Grid Margin="10" HorizontalAlignment="Stretch" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="120"/> 
+                <ColumnDefinition Width="*"/> 
+                <ColumnDefinition Width="80"/> 
+            </Grid.ColumnDefinitions>
+            <Label Grid.Column="0" Content="Task:" Target="{Binding ElementName=TaskBox}" />
+            <TextBox  Grid.Column="1" x:Name="TaskBox" FontWeight="Medium" Margin="5"
+                     BorderThickness="2" BorderBrush="#0E239A"/>
+            <Button Grid.Column="2" Width="80" Height="40" Foreground="#FAFAFA" Background="#01B0FF" BorderThickness="0" ClickMode="Press" FontSize="20"
+                    Content="Add" Click="AddVTask"></Button>
+            </Grid>
+            <Button Width="160" Height="40" Margin="20" Content="AddVisit" FontSize="20" FontWeight="Bold"
+                    Foreground="#FAFAFA" Background="#01B0FF" BorderThickness="0" ClickMode="Press"
+                    Click="AddVisit">
+            </Button>
+        </StackPanel>
+    </Grid>
+</Window>

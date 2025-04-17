@@ -4,6 +4,8 @@ namespace CIMEX_Project;
 
 public partial class StudyCreation : Window
 {
+    private PrincipalInvestigator _principalInvestigator;
+    private List<Visit> _visits;
     public StudyCreation()
     {
         InitializeComponent();
@@ -11,23 +13,30 @@ public partial class StudyCreation : Window
 
     private void CreateStudy(object sender, RoutedEventArgs e)
     {
-        throw new NotImplementedException();
+       
     }
 
     private void CreatePrincipalInvestigator(object sender, RoutedEventArgs e)
     {
-        var form = new TeamMemberInputForm();
+        var form = new TeamMemberInputForm(true);
         if (form.ShowDialog() == true)
         {
-            PrincipalInvestigator principalInvestigator = (PrincipalInvestigator)form.Result;
+           _principalInvestigator = new PrincipalInvestigator(form.Result.Name,
+                form.Result.Surname, form.Result.Email, "Medical Doctor");
+            
             PrincipalInvestigatorData.Text = $"Principal Investigator:\n" +
-                                             $"Dr.{principalInvestigator.Surname} {principalInvestigator.Name}" +
-                                             $"e-Mail {principalInvestigator.Email}";
+                                             $"Dr.{_principalInvestigator.Surname} {_principalInvestigator.Name} " +
+                                             $"e-Mail {_principalInvestigator.Email}";
         }
+        
     }
 
-    private void Addvisit(object sender, RoutedEventArgs e)
+    private void AddVisit(object sender, RoutedEventArgs e)
     {
-        throw new NotImplementedException();
+        var form = new VisitAddition();
+        if (form.ShowDialog() == true)
+        {
+            
+        }
     }
 }

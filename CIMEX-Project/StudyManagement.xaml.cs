@@ -12,10 +12,10 @@ public partial class StudyManagement : Window
 
     public StudyManagement(TeamMember user, Study study)
     {
+        InitializeComponent();
         _user = (PrincipalInvestigator?)user;
         _study = study;
         GetTeam();
-        InitializeComponent();
         StudyTitle = $"{study.StudyName} team management";
         DataContext = this;
     }

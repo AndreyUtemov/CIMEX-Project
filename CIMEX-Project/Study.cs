@@ -7,6 +7,7 @@ public class Study
     public string RoleOfUser { get;  set; }
     public PrincipalInvestigator PrincipalInvestigator { get; set; }
     public bool NeedAttention { get;  set; }
+    public List<Visit> VisitsSchedule { get; set; }
 
     public Study()
     {
