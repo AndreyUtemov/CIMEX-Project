@@ -11,7 +11,7 @@ public class PatientWindowManagement
     public async Task<List<Button>> GetVisitButtons(Patient patient)
     {
         Console.WriteLine("Creating of visit buttons list in GetVisitButtons  PatientWindowManagement");
-        List<Visit> visitList = await _daoVisitMongoDb.GetPatientVisits(patient.PatientHospitalId);
+        List<PatientsVisit> visitList = await _daoVisitMongoDb.GetPatientVisits(patient.PatientHospitalId);
         foreach (var visit in visitList)
         {
             Console.WriteLine($"Visit - {visit.Name}  Date - {visit.DateOfVisit} Status - {visit.Status}");

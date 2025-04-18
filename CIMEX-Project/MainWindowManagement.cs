@@ -106,7 +106,7 @@ public class MainWindowManagement
         List<Patient> screenedPatients = new List<Patient>();
         foreach (Patient patient in allPatientsList)
         {
-            if (patient.Status == "screening")
+            if (patient.Status == "Screened")
             {
                 screenedPatients.Add(patient);
             }

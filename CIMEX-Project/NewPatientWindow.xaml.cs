@@ -34,8 +34,8 @@ public partial class NewPatientWindow : Window
             string name = FirstnameBox.Text;
             string surname = SurnameBox.Text;
             DateTime screeningDate = ScreeningPicker.SelectedDate.Value;
-            Visit visit = new Visit("Screening", screeningDate, 0, "scheduled");
-            Patient patient = new Patient(name, surname, patientId, _study.StudyName, "screening", visit);
+            PatientsVisit patientsVisit = new PatientsVisit("Screening", screeningDate, 0, "scheduled");
+            Patient patient = new Patient(name, surname, patientId, _study.StudyName, "screening", patientsVisit);
             ShowMessageBox(patient);
         }
     }
@@ -44,7 +44,7 @@ public partial class NewPatientWindow : Window
     {
         string title = $"Add patient to {_study.StudyName}?";
         string message = $"ClinicalID {patient.PatientHospitalId}\nSurname {patient.Surname}\nName {patient.Name}" +
-                         $"\nScreening on {patient.NextVisit.DateOfVisit:dd.MM.yyyy}";
+                         $"\nScreening on {patient.NextPatientsVisit.DateOfVisit:dd.MM.yyyy}";
         var result = MessageBox.Show(message, title, MessageBoxButton.OKCancel);
         if (result == MessageBoxResult.OK)
         {

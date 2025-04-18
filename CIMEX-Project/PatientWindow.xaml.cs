@@ -77,7 +77,7 @@ public partial class PatientWindow : Window
     {
         Button button = sender as Button;
 
-        Visit visit = (Visit)button.Tag;
+        PatientsVisit patientsVisit = (PatientsVisit)button.Tag;
 
         // _patientWindowManagement.SetVisitData(visit);
         _visitscreen = true;

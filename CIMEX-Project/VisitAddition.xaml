@@ -43,18 +43,14 @@
                          BorderThickness="2" BorderBrush="#0E239A"/>
             </Grid>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <Label  Content="Interval after randomization:" Target="{Binding ElementName=TitleBox}" />
+                <Label  Content="Interval after randomization(days):" Target="{Binding ElementName=TitleBox}" />
                 <TextBox  x:Name="IntervalBox" FontWeight="Medium" Width="40" Margin="5"
                          BorderThickness="2" BorderBrush="#0E239A"/>
-                <ComboBox x:Name="UnitBox"
-                          Height="35" Width="150" FontWeight="Medium" Margin="5"
-                          SelectedIndex="-1" BorderThickness="2" BorderBrush="#0E239A"
-                          ItemsSource="{Binding TimeIntervals}"/>
-                <Label  Content="Time window:" Target="{Binding ElementName=TitleBox}" />
+               <Label  Content="Time window (days):" Target="{Binding ElementName=TitleBox}" />
                 <TextBox  x:Name="TimeWindowBox" FontWeight="Medium" Width="40" Margin="5"
                           BorderThickness="2" BorderBrush="#0E239A"/>
                 </StackPanel>
-            <ListView x:Name="TaskList" ItemsSource="{Binding Tasks}" Margin="10" BorderThickness="0">
+            <ListView x:Name="TaskList" ItemsSource="{Binding Tasks}" Margin="10" BorderThickness="0" MaxHeight="150">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding}" FontSize="16" Padding="5"/>

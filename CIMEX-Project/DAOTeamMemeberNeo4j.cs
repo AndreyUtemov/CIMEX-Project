@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.DirectoryServices.ActiveDirectory;
 using System.Net.Http;
+using System.Text;
 using System.Text.Json;
 using System.Windows.Documents;
 using Neo4j.Driver;
@@ -131,10 +132,40 @@ public class DAOTeamMemeberNeo4j : DAOTeamMember
     }
 
 
-    public void CreateInvestigator(Investigator investigator)
+    public async Task<bool> CreateTeamMemeber(TeamMember teamMember, string password)
     {
-        throw new NotImplementedException();
+        Console.WriteLine("Started CreateTeamMemeber");
+        try
+        {
+            Console.WriteLine($"name {teamMember.Name} surname {teamMember.Surname} email {teamMember.Email} role {teamMember.Role} password {password}");
+            // Создаём объект для API, который включает пароль
+            var payload = new
+            {
+                Name = teamMember.Name,
+                Surname = teamMember.Surname,
+                Email = teamMember.Email,
+                Role = teamMember.Role,
+                Password = password
+            };
+
+            string json = JsonSerializer.Serialize(payload);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            string requestUrl = "team-member-creator";
+            HttpResponseMessage response = await ApiClient.Instance.PostAsync(requestUrl, content);
+
+            Console.WriteLine($"Response: {response.StatusCode}");
+
+            return response.IsSuccessStatusCode;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception in CreateTeamMemeber: {ex.Message}");
+            return false;
+        }
     }
+
+
 
     public void SetInvestigator(Investigator investigator)
     {
@@ -144,5 +175,14 @@ public class DAOTeamMemeberNeo4j : DAOTeamMember
     public int DeleteInvestigator(Investigator investigator)
     {
         throw new NotImplementedException();
+    }
+    
+    private class TeamMemberInfo
+    {
+        public string Email { get; set; }
+        public string Name { get; set; }
+        public string Surname { get; set; }
+        public string Role { get; set; }
+        public string Password { get; set; }
     }
 }

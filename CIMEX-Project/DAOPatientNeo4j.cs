@@ -53,7 +53,7 @@ public class DAOPatientNeo4j : DAOPatient
             {
                 Console.WriteLine(
                     $"Name: {patient.StudyName} Surname:  {patient.Surname}  Role: {patient.PatientStudyId}" +
-                    $"Study {patient.StudyName} Visit{patient.NextVisit.Name}  {patient.NextVisit.DateOfVisit.ToString("dd.MM.yyyy")}");
+                    $"Study {patient.StudyName} Visit{patient.NextPatientsVisit.Name}  {patient.NextPatientsVisit.DateOfVisit.ToString("dd.MM.yyyy")}");
             }
 
             return patients;
@@ -88,8 +88,8 @@ public class DAOPatientNeo4j : DAOPatient
                 surname = patient.Surname,
                 patientCid = patient.PatientHospitalId,
                 studyName = patient.StudyName,
-                visitDate = patient.NextVisit.DateOfVisit,
-                nextVisit = patient.NextVisit.Name
+                visitDate = patient.NextPatientsVisit.DateOfVisit,
+                nextVisit = patient.NextPatientsVisit.Name
             });
 
             // Извлечение результата из запроса

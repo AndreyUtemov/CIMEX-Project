@@ -15,8 +15,8 @@ public partial class AdminWindow : Window
     private async void CreateListOfStudies()
     {
         Console.WriteLine("CreateListOfStudies started");
-        AdminDao adminDao = new AdminDao();
-        var allStudies = await adminDao.GetAllStudy();
+        DAOAdminNeo4j daoAdminNeo4J = new DAOAdminNeo4j();
+        var allStudies = await daoAdminNeo4J.GetAllStudy();
         foreach (var study in allStudies)
         {
             Console.WriteLine($"{study.StudyName} in List");

@@ -10,7 +10,7 @@ public interface DAOTeamMember
 
     Task<TeamMember> GetTeamMember(string eMail);
 
-    void CreateInvestigator(Investigator investigator);
+    Task<bool>CreateTeamMemeber(TeamMember teamMember, string password);
 
     void SetInvestigator(Investigator investigator);
 

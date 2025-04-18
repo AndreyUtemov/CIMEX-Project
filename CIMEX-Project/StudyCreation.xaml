@@ -20,22 +20,37 @@
     <Grid>
         <StackPanel Margin="10">
             <Image Height="90" HorizontalAlignment="Left" Margin="10" Source="Logo.png"></Image>
-            <TextBlock TextAlignment="Center" Margin="10" FontSize="22" Foreground="#0E239A" FontWeight="Bold"  Text="Create new study"/> 
+            <TextBlock TextAlignment="Center" Margin="10" FontSize="22" Foreground="#0E239A" FontWeight="Bold"
+                       Text="Create new study" />
             <Label Content="Study title:" Target="{Binding ElementName=TitleBox}" />
             <TextBox Name="TitleBox" Margin="10" BorderThickness="3" Height="40" />
             <Label Content="Full Study Name" Target="{Binding ElementName=FullNameBox}" />
-            <TextBox Name="FullNameBox" Height="80" BorderThickness="3" Margin="10" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"></TextBox>
-           <TextBlock x:Name="PrincipalInvestigatorData" FontSize="16"></TextBlock>
-           <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-            <Button Width="60" Height="60" Margin="20, 20,20, 20"
-                    Background="Transparent" BorderThickness="0" ClickMode="Press" Click="CreatePrincipalInvestigator">
-                <wpf:PackIcon Kind="AccountTie" Foreground="#4F65B7" Height="50" Width="50" />
-            </Button>
+            <TextBox Name="FullNameBox" Height="80" BorderThickness="3" Margin="10" TextWrapping="Wrap"
+                     VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            </TextBox>
+            <TextBlock x:Name="PrincipalInvestigatorData" FontSize="16"></TextBlock>
+            <ListView x:Name="VisitList" ItemsSource="{Binding Tasks}" Margin="10" BorderThickness="0" MaxHeight="150">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}" FontSize="16" Padding="5" />
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                 <Button Width="60" Height="60" Margin="20, 20,20, 20"
-                                  Background="Transparent" BorderThickness="0" ClickMode="Press" Click="AddVisit">
+                        Background="Transparent" BorderThickness="0" ClickMode="Press"
+                        Click="CreatePrincipalInvestigator">
+                    <wpf:PackIcon Kind="AccountTie" Foreground="#4F65B7" Height="50" Width="50" />
+                </Button>
+                <Button Width="60" Height="60" Margin="20, 20,20, 20"
+                        Background="Transparent" BorderThickness="0" ClickMode="Press" Click="AddVisit">
                     <wpf:PackIcon Kind="CalendarPlusOutline" Foreground="#4F65B7" Height="50" Width="50"></wpf:PackIcon>
                 </Button>
-                </StackPanel>
+            </StackPanel>
+            <Button Width="160" Height="60" Margin="20" Content="CreateStudy" FontSize="20" FontWeight="Bold"
+                    Foreground="#FAFAFA" Background="#01B0FF" BorderThickness="0" ClickMode="Press"
+                    Click="CreateStudy">
+            </Button>
         </StackPanel>
     </Grid>
 </Window>

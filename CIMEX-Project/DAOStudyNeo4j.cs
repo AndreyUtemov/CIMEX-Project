@@ -1,4 +1,5 @@
 using System.Net.Http;
+using System.Text;
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Neo4j.Driver;
@@ -81,9 +82,34 @@ public class DAOStudyNeo4j : DAOStudy
         return isUserPI;
     }
 
-    public Task<IActionResult> CreateStudy(Study study)
+    public async Task<bool> CreateStudy(Study study)
     {
-        throw new NotImplementedException();
+        
+        try
+        {
+            var payload = new
+            {
+                Title = study.StudyName,
+                FullName = study.FullName,
+                PrincipalInvestigatorsEmail = study.PrincipalInvestigator.Email 
+             };
+
+            string json = JsonSerializer.Serialize(payload);
+            Console.WriteLine(json.ToString());
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            string requestUrl = "study-creator";
+            HttpResponseMessage response = await ApiClient.Instance.PostAsync(requestUrl, content);
+
+            Console.WriteLine($"Response: {response.StatusCode}");
+
+            return response.IsSuccessStatusCode;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception in CreateTeamMember: {ex.Message}");
+            return false;
+        }
     }
 
     public Study SetStudy(Study study)
@@ -94,5 +120,12 @@ public class DAOStudyNeo4j : DAOStudy
     public int DeleteStudy()
     {
         throw new NotImplementedException();
+    }
+
+    private class StudyCreator
+    {
+        public string Title { get; set; }
+        public string FullName { get; set; }
+        public string PrincipalInvestigatorsEmail { get; set; }
     }
 }

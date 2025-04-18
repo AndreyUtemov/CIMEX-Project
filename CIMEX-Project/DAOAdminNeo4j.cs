@@ -3,7 +3,7 @@ using System.Text.Json;
 
 namespace CIMEX_Project;
 
-public class AdminDao
+public class DAOAdminNeo4j : DAOAdmin
 {
     public async Task<List<Study>> GetAllStudy()
     {

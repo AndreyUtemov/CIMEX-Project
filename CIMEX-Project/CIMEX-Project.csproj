@@ -10,10 +10,12 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
       <PackageReference Include="MaterialDesignThemes" Version="5.2.2-ci942" />
       <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.3.0" />
       <PackageReference Include="MongoDB.Driver" Version="3.2.1" />
       <PackageReference Include="Neo4j.Driver" Version="5.27.0" />
+      <PackageReference Include="PasswordGenerator" Version="2.1.0" />
     </ItemGroup>
 
 </Project>

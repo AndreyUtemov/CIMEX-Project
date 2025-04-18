@@ -6,7 +6,7 @@ public interface DAOStudy
 {
     Task<List<Study>> GetAllStudy(string eMail);
     
-    Task<IActionResult> CreateStudy(Study study);
+    Task<bool> CreateStudy(Study study);
 
     Study SetStudy(Study study);
 

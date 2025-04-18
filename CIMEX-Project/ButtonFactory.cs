@@ -16,11 +16,11 @@ public class ButtonFactory
             Console.WriteLine($"Creating patient {patient.PatientHospitalId}  {patient.Surname}");
             var button = new Button()
             {
-                Content = $"{patient.Surname}\n{patient.Name}\n\n{patient.NextVisit.DateOfVisit.ToString("dd.MM.yyyy")}",
+                Content = $"{patient.Surname}\n{patient.Name}\n\n{patient.NextPatientsVisit.DateOfVisit.ToString("dd.MM.yyyy")}",
                 Style = (Style)Application.Current.Resources["Big_Button"],
                 Tag = patient
             };
-            if (DateTime.Now > patient.NextVisit.DateOfVisit)
+            if (DateTime.Now > patient.NextPatientsVisit.DateOfVisit)
             {
                 button.Foreground = new SolidColorBrush(Colors.OrangeRed);
             }
@@ -57,10 +57,10 @@ public class ButtonFactory
         return buttonList;
     }
 
-    public async Task<List<Button>> CreateVisitButtons(List<Visit> visits)
+    public async Task<List<Button>> CreateVisitButtons(List<PatientsVisit> visits)
     {
         List<Button> buttonList = new List<Button>();
-        foreach (Visit visit in visits)
+        foreach (PatientsVisit visit in visits)
         {
             string contentString;
             Console.WriteLine($"{visit.Name}  {visit.DateOfVisit.ToString("dd.MM.yyyy")}");
