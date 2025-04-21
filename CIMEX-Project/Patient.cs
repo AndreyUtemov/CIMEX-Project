@@ -15,4 +15,10 @@ public class Patient : Person
         Status = status;
         NextPatientsVisit = nextPatientsVisit;
     }
+
+    public async Task CreateNewVisit(Patient patient, PatientsVisit patientsVisit)
+    {
+        DAOPatientNeo4j daoPatientNeo4J = new DAOPatientNeo4j();
+        daoPatientNeo4J.CreateNewVisit(patient, patientsVisit);
+    }
 }

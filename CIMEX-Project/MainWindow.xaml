@@ -28,24 +28,24 @@
             <TextBlock Grid.Row="0" Grid.Column="0" FontSize="42" FontWeight="Bold" FontFamily="Arial" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding Date}"/>
 
             <!-- Upper Panel with names and study -->
-            <TextBlock Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" FontSize="42" FontWeight="Bold" FontFamily="Arial" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding LeftTitle}" />
-            <TextBlock Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="3" FontSize="22" FontWeight="Bold" FontFamily="Arial" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding RightTitle}" />
+            <TextBlock Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" FontSize="42" FontWeight="Bold" FontFamily="Arial" Foreground="#0E239A"  TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding LeftTitle}" />
+            <TextBlock Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="3" FontSize="42" FontWeight="Bold" FontFamily="Arial" Foreground="#0E239A"  TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding RightTitle}" />
             <TextBlock Grid.Row="3" Grid.Column="0" FontSize="12" TextAlignment="Left" VerticalAlignment="Bottom" Margin="30,0,0,0" Foreground="#01B0FF">CIMEX by SoftPanda Solutions</TextBlock>
             <TextBlock Grid.Row="3" Grid.Column="5" FontSize="12" TextAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,30,0"  Foreground="#01B0FF">V0.1.0</TextBlock>
             <TextBlock Grid.Row="1" Grid.Column="0" FontSize="28" TextAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" Padding="30,0,0,0" Foreground="#0E239A" Text="Studies"/>
             <TextBlock Grid.Row="2" Grid.Column="0" FontSize="28" TextAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" Padding="30,0,0,0" Foreground="#01B0FF" Text="Screened"/>
             <TextBlock Grid.Row="3" Grid.Column="0" FontSize="28" TextAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" Padding="30,0,0,0" Foreground="#0085D4" Text="Included"/>
             <Image Grid.Row="0" Grid.Column="5" Height="120" Source="Logo.png"></Image>
-            <Button Width="60" Height="60" Grid.Row="1" Grid.Column="5" Background="Transparent" BorderThickness="0" VerticalAlignment="Center" HorizontalAlignment="Center"
-                    Click="VisitStudyDocumentsPage">
+            <Button x:Name="VisitDocumentButton" ToolTip="Explore Study Documentation" Width="60" Height="60" Grid.Row="1" Grid.Column="5" Background="Transparent" BorderThickness="0" VerticalAlignment="Center" HorizontalAlignment="Center"
+                    Click="VisitStudyDocumentsPage" Visibility="Collapsed">
                 <wpf:PackIcon Kind="FolderMultipleOutline" Foreground="#4F65B7" Width="50" Height="50" Margin="0"/>
             </Button>
-            <Button Width="60" Height="60" Background="Transparent" BorderThickness="0" Padding="0" Grid.Row="2" Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Center" 
-            Click="AddPatientButtonClick">
+            <Button x:Name="AddPatientButton" ToolTip="Add new Patient" Width="60" Height="60" Background="Transparent" BorderThickness="0" Padding="0" Grid.Row="2" Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Center" 
+            Click="AddPatientButtonClick" Visibility="Collapsed">
             <wpf:PackIcon Kind="PersonAddOutline" Width="50" Height="50" Foreground="#4F65B7" VerticalAlignment="Center" HorizontalAlignment="Center"/>
             </Button>
-            <Button Grid.Row="3" Grid.Column="5" Background="Transparent" BorderThickness="0" Padding="0" Width="60" Height="60"  VerticalAlignment="Center" HorizontalAlignment="Center"
-                    Click="ChangeStudyTeam">
+            <Button x:Name="ChangeTeamButton" ToolTip="Change Study Team" Grid.Row="3" Grid.Column="5" Background="Transparent" BorderThickness="0" Padding="0" Width="60" Height="60"  VerticalAlignment="Center" HorizontalAlignment="Center"
+                    Click="ChangeStudyTeam" Visibility="Collapsed">
             <wpf:PackIcon Kind="AccountCogOutline"  Foreground="#4F65B7" Height="50" Width="50" VerticalAlignment="Center" HorizontalAlignment="Center"/>
             </Button>
             <ScrollViewer Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="4" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
@@ -57,7 +57,6 @@
             <ScrollViewer Grid.Row="3" Grid.Column="1"  Grid.ColumnSpan="4" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
                 <WrapPanel x:Name="BottomPanel" Orientation="Horizontal"></WrapPanel>
             </ScrollViewer>
-            
         </Grid>
     </Grid>
 </Window>

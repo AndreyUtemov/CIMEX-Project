@@ -109,6 +109,16 @@ public partial class MainWindow : Window
     {
         Button button = sender as Button;
         Study study = (Study)button.Tag;
+        VisitDocumentButton.Visibility = Visibility.Visible;
+        AddPatientButton.Visibility = Visibility.Visible;
+        if (study.RoleOfUser == "Principal Investigator")
+        {
+            ChangeTeamButton.Visibility = Visibility.Visible;
+        }
+        else
+        {
+            ChangeTeamButton.Visibility = Visibility.Collapsed;
+        }
         var studyWindowData = _mainWindowManagement.SetStudyWindow(study);
         _includedButtons = studyWindowData.Included;
         _screenedButtons = studyWindowData.Screened;

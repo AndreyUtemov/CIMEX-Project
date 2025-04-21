@@ -34,7 +34,7 @@ public partial class NewPatientWindow : Window
             string name = FirstnameBox.Text;
             string surname = SurnameBox.Text;
             DateTime screeningDate = ScreeningPicker.SelectedDate.Value;
-            PatientsVisit patientsVisit = new PatientsVisit("Screening", screeningDate, 0, "scheduled");
+            PatientsVisit patientsVisit = new PatientsVisit("Screening", screeningDate, 0, true);
             Patient patient = new Patient(name, surname, patientId, _study.StudyName, "screening", patientsVisit);
             ShowMessageBox(patient);
         }

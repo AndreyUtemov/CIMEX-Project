@@ -59,7 +59,7 @@ public class DaoVisitMongoDb
                 visitData.Name ?? "Не указано", // Используем дефолтное значение, если имя визита пустое
                 DateTime.TryParse(visitData.DateOfVisit, out DateTime date)
                     ? date
-                    : DateTime.MinValue// Преобразование даты
+                    : DateTime.MinValue // Преобразование даты
             ));
         }
         catch (HttpRequestException ex)
@@ -79,20 +79,21 @@ public class DaoVisitMongoDb
         }
     }
 
-    public async Task<List<StructureOfVisit>> GetStructureOfVisits(string patientId)
+    public async Task<List<StructureOfVisit>> GetStructureOfAllVisits(string studyName)
     {
         Console.WriteLine("GetStructureOfVisits");
 
         try
         {
-            string requestUrl = $"patient-visits/{patientId}";
+            string requestUrl = $"study-visits/{studyName}";
             HttpResponseMessage response = await ApiClient.Instance.GetAsync(requestUrl);
             Console.WriteLine($"Mongo response: {response.StatusCode}");
             if (!response.IsSuccessStatusCode)
             {
                 Console.WriteLine($"API request failed with status code: {response.StatusCode}");
-                return new List<StructureOfVisit>(); 
+                return new List<StructureOfVisit>();
             }
+
             string jsonString = await response.Content.ReadAsStringAsync();
             if (string.IsNullOrEmpty(jsonString))
             {
@@ -103,18 +104,19 @@ public class DaoVisitMongoDb
             PatientVisitResponse patientVisitResponse = JsonSerializer.Deserialize<PatientVisitResponse>(jsonString,
                 new JsonSerializerOptions
                 {
-                    PropertyNameCaseInsensitive = true, 
-                    AllowTrailingCommas = true 
+                    PropertyNameCaseInsensitive = true,
+                    AllowTrailingCommas = true
                 });
 
-  if (patientVisitResponse?.Visits == null || patientVisitResponse.Visits.Count == 0)
+            if (patientVisitResponse?.Visits == null || patientVisitResponse.Visits.Count == 0)
             {
                 Console.WriteLine("No visits found in API response.");
                 return new List<StructureOfVisit>();
             }
+
             return patientVisitResponse.Visits.ConvertAll<StructureOfVisit>(visitData => new StructureOfVisit
-               (
-                visitData.Name ?? "Не указано", // Используем дефолтное значение, если имя визита пустое
+            (
+                visitData.Name,
                 visitData.TimeWindow, // Время визита
                 visitData.PeriodAfterRandomization,
                 visitData.Tasks
@@ -136,6 +138,61 @@ public class DaoVisitMongoDb
             throw new InvalidOperationException($"Неизвестная ошибка при получении визитов: {ex.Message}", ex);
         }
     }
+
+    public async Task<List<string>> GetVisitTasks(string studyName, string visitName)
+    {
+        Console.WriteLine("GetVisitTasks");
+
+        try
+        {
+            // Формируем URL с query-параметрами
+            string requestUrl =
+                $"study-visits/tasks?studyTitle={Uri.EscapeDataString(studyName)}&visitName={Uri.EscapeDataString(visitName)}";
+            HttpResponseMessage response = await ApiClient.Instance.GetAsync(requestUrl);
+            Console.WriteLine($"API response: {response.StatusCode}");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                Console.WriteLine($"API request failed with status code: {response.StatusCode}");
+                return new List<string>(); // Возвращаем пустой список при ошибке
+            }
+
+            string jsonString = await response.Content.ReadAsStringAsync();
+            if (string.IsNullOrEmpty(jsonString))
+            {
+                Console.WriteLine("API returned an empty response.");
+                return new List<string>();
+            }
+
+            // Десериализуем ответ как List<string>
+            List<string> tasks = JsonSerializer.Deserialize<List<string>>(jsonString,
+                new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true,
+                    AllowTrailingCommas = true
+                });
+
+            if (tasks == null || tasks.Count == 0)
+            {
+                Console.WriteLine("No tasks found in API response.");
+                return new List<string>();
+            }
+
+            return tasks;
+        }
+        catch (HttpRequestException ex)
+        {
+            throw new InvalidOperationException($"Ошибка при запросе к API: {ex.Message}", ex);
+        }
+        catch (JsonException ex)
+        {
+            throw new InvalidOperationException($"Ошибка десериализации ответа API: {ex.Message}", ex);
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"Неизвестная ошибка при получении задач: {ex.Message}", ex);
+        }
+    }
 }
 
 public class PatientVisitResponse
@@ -153,7 +210,7 @@ public class BsonVisit
     [System.Text.Json.Serialization.JsonPropertyName("date")]
     public string DateOfVisit { get; set; }
 
-    [System.Text.Json.Serialization.JsonPropertyName("timeWindow")]
+    [System.Text.Json.Serialization.JsonPropertyName("windowDays")]
     public int TimeWindow { get; set; }
     [System.Text.Json.Serialization.JsonPropertyName("intervalFromRandomization")]
     public int PeriodAfterRandomization { get; set; }

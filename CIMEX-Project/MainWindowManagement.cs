@@ -72,7 +72,7 @@ public class MainWindowManagement
 
     public string GetLeftTitle()
     {
-        return _user.Name + " " + _user.Surname;
+        return $"{_user.Name}  {_user.Surname}\n{_user.Role}";
     }
 
     public string GetRightTitle()
@@ -83,7 +83,7 @@ public class MainWindowManagement
         }
         else
         {
-            return actualStudy.StudyName + "\n" + actualStudy.FullName;
+            return $"{actualStudy.StudyName}\nyour role in study: {actualStudy.RoleOfUser}\n";
         }
     }
 
@@ -91,6 +91,7 @@ public class MainWindowManagement
     {
         isMainWindow = false;
         actualStudy = study;
+        Console.WriteLine($"Chosen study {study.StudyName} role {study.RoleOfUser} ");
         List<Patient> studyPatients = _user.GetAllPatientsInStudy(study.StudyName, _patients);
         string userStatusInStudy = study.RoleOfUser;
         _user = CreateUserForStudy(userStatusInStudy);
@@ -121,19 +122,19 @@ public class MainWindowManagement
 
     private TeamMember CreateUserForStudy(string userRoleInStudy)
     {
-        UserFactory userFactory = new UserFactory();
+        TeamMemberFactory teamMemberFactory = new TeamMemberFactory();
         TeamMember user;
         if (userRoleInStudy.Equals("Principal"))
         {
-            user = userFactory.CreateUserForStudy(userRoleInStudy, _user);
+            user = teamMemberFactory.CreateUserForStudy(userRoleInStudy, _user);
         }
         else if (userRoleInStudy.Equals("Investigator"))
         {
-            user = userFactory.CreateUserForStudy("Investigator", _user);
+            user = teamMemberFactory.CreateUserForStudy("Investigator", _user);
         }
         else
         {
-            user = userFactory.CreateUserForStudy("Nurse", _user);
+            user = teamMemberFactory.CreateUserForStudy("Nurse", _user);
         }
 
         return user;

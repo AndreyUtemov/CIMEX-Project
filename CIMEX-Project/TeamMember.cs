@@ -42,7 +42,7 @@ public class TeamMember : Person
     public async Task<List<TeamMember>> GetTeamList(Study study)
     {
         DAOTeamMemeberNeo4j daoTeamMemeberNeo4J = new DAOTeamMemeberNeo4j();
-        List<TeamMember> teamMembers = await daoTeamMemeberNeo4J.GetAllTeamMembers(study);
+        List<TeamMember> teamMembers = await daoTeamMemeberNeo4J.GetAllStudyTeamMembers(study.StudyName);
         return teamMembers;
     }
 

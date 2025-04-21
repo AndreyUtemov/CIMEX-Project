@@ -8,7 +8,7 @@
         Title="PatientWindow" Height="900" Width="600">
     <Grid>
 
-        <Grid x:Name="grid" Margin="15" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <Grid Margin="15" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Grid.RowDefinitions>
                 <RowDefinition Height="150" />
                 <RowDefinition Height="*" />

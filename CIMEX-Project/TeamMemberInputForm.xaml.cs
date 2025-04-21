@@ -37,7 +37,7 @@ public partial class TeamMemberInputForm : Window
                Email = EMailBox.Text,
                Name = NameBox.Text,
                Surname = SurnameBox.Text,
-               Role = "Clinical investigator"
+               Role = "Medical Doctor"
            };
            if (_newTeamMember)
            {

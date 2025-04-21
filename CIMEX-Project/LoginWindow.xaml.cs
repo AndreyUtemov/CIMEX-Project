@@ -1,4 +1,5 @@
 using System.Windows;
+using System.Windows.Controls;
 
 namespace CIMEX_Project;
 
@@ -12,7 +13,8 @@ public partial class LoginWindow : Window
 
     private async void LoginButtonClick(object sender, RoutedEventArgs e)
     {
-        
+        Button button = sender as Button;
+        button.IsEnabled = false;
         string userLogin = LoginBox.Text;
         string password = PasswordBox.Password;
 
@@ -37,6 +39,10 @@ public partial class LoginWindow : Window
             else
             {
                 MessageBox.Show("Wrong Login or Password", "Fail", MessageBoxButton.OK, MessageBoxImage.Error);
+                LoginBox.Clear();
+                PasswordBox.Clear();
+                
+                button.IsEnabled = true;
             }
         }
     }

@@ -6,10 +6,11 @@ namespace CIMEX_Project;
 
 public partial class PatientWindow : Window
 {
-    private bool _visitscreen = false;
     private Patient _patient;
     private TeamMember _user;
-   
+    List<StructureOfVisit> _visitsStructure;
+    private List<PatientsVisit> _visitList; 
+
     public PatientWindow(Patient patient, TeamMember user)
     {
         _user = user;
@@ -22,9 +23,8 @@ public partial class PatientWindow : Window
     {
         try
         {
-            PatientWindowManagement _patientWindowManagement = new PatientWindowManagement();
             Console.WriteLine("try to get visit buttons");
-            var allVisitButtons = await _patientWindowManagement.GetVisitButtons(_patient);
+            var allVisitButtons = await GetVisitButtons(_patient);
             Console.WriteLine("We have visit buttons and try to test it");
             foreach (var button in allVisitButtons)
             {
@@ -44,11 +44,11 @@ public partial class PatientWindow : Window
             Titel = $"{_patient.Surname} {_patient.Name}\n{_patient.StudyName}"
         };
     }
-    
+
     public class PatientViewModel
     {
         public string Titel { get; set; }
-       }
+    }
 
     private async Task AddButtons(List<Button> buttonList)
     {
@@ -57,18 +57,8 @@ public partial class PatientWindow : Window
         foreach (Button button in buttonList)
         {
             Console.WriteLine($"Button {button.Content} placing");
-            
-            if (!_visitscreen)
-            {
             button.Click -= VisitButtonClick;
             button.Click += VisitButtonClick;
-            }
-            else
-            {
-                button.Click -= VisitButtonClick;
-                button.Click += ManipulationButtonClick; 
-            }
-
             VisitButtonPanel.Children.Add(button);
         }
     }
@@ -76,24 +66,39 @@ public partial class PatientWindow : Window
     private void VisitButtonClick(object sender, RoutedEventArgs e)
     {
         Button button = sender as Button;
-
         PatientsVisit patientsVisit = (PatientsVisit)button.Tag;
-
-        // _patientWindowManagement.SetVisitData(visit);
-        _visitscreen = true;
-        // TODO visit button logic, create visit window 
+        VisitWindow visitWindow = new VisitWindow(patientsVisit, _patient);
+        visitWindow.Owner = this;
+        visitWindow.ShowDialog();
     }
 
-    private void ManipulationButtonClick(object sender, RoutedEventArgs e)
+    public async Task<List<Button>> GetVisitButtons(Patient patient)
     {
-        var button = sender as Button;
-        var manipulation = button.Tag;
-        button.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0E239A"));
-        button.Click -= ManipulationButtonClick;
-    }
+        DaoVisitMongoDb daoVisitMongoDb = new DaoVisitMongoDb();
+        Console.WriteLine("Creating of visit buttons list in GetVisitButtons  PatientWindowManagement");
+     
+        List<PatientsVisit> _visitList = await daoVisitMongoDb.GetPatientVisits(patient.PatientHospitalId);
+        foreach (var visit in _visitList)
+        {
+            if (visit.Name == patient.NextPatientsVisit.Name)
+            {
+                visit.IsScheduled = true;
+            }
+            else
+            {
+                visit.IsScheduled = false;
+            }
 
-    private void CloseWindow_Click(object sender, RoutedEventArgs e)
-    {
-        this.Close(); // Закрываем окно (можно нажать крестик или кнопку)
+            Console.WriteLine($"Visit - {visit.Name}  Date - {visit.DateOfVisit}");
+        }
+
+        ButtonFactory buttonFactory = new ButtonFactory();
+        List<Button> buttonList = await buttonFactory.CreateVisitButtons(_visitList);
+        foreach (var button in buttonList)
+        {
+            Console.WriteLine(button.Tag.ToString());
+        }
+
+        return buttonList;
     }
 }

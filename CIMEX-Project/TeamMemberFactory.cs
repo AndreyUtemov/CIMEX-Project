@@ -1,6 +1,6 @@
 namespace CIMEX_Project;
 
-public class UserFactory
+public class TeamMemberFactory
 {
     public TeamMember CreateUserForStudy(string RoleInStudy, TeamMember user)
     {
@@ -11,7 +11,7 @@ public class UserFactory
         
         switch (RoleInStudy)
         {
-            case "Principal":
+            case "Principal Investigator":
                 return new PrincipalInvestigator(name, surname, eMail, role);
             case "Investigator":
                 return new Investigator(name, surname, eMail, role);

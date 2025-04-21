@@ -16,7 +16,7 @@ public class ButtonFactory
             Console.WriteLine($"Creating patient {patient.PatientHospitalId}  {patient.Surname}");
             var button = new Button()
             {
-                Content = $"{patient.Surname}\n{patient.Name}\n\n{patient.NextPatientsVisit.DateOfVisit.ToString("dd.MM.yyyy")}",
+                Content = $"{patient.Surname}\n{patient.Name}\n\n{patient.StudyName}\n{patient.NextPatientsVisit.DateOfVisit.ToString("dd.MM.yyyy")}",
                 Style = (Style)Application.Current.Resources["Big_Button"],
                 Tag = patient
             };
@@ -73,8 +73,8 @@ public class ButtonFactory
                 Style = (Style)Application.Current.Resources["Small_Button"],
                 Tag = visit,
                 Background = new SolidColorBrush(
-                visit.Status == "completed" ? ((Color)ColorConverter.ConvertFromString("#0E239A")) :
-                    visit.Status == "scheduled" ? ((Color)ColorConverter.ConvertFromString("#0085D4")) : ((Color)ColorConverter.ConvertFromString("#01B0FF"))
+                visit.IsScheduled ? ((Color)ColorConverter.ConvertFromString("#0E239A")) :
+                    ((Color)ColorConverter.ConvertFromString("#0085D4")) 
                 )
             };
             buttonList.Add(button);

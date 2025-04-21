@@ -71,38 +71,76 @@ public class DAOTeamMemeberNeo4j : DAOTeamMember
         }
     }
     
-    public async Task<List<TeamMember>> GetAllTeamMembers(Study study)
+    public async Task<TeamMember> GetAttendingTeamMember(string patientClinicalId)
     {
-        await _neo4JClient.Connect();
-        await using var session = _neo4JClient.GetDriver().AsyncSession();
-        List<TeamMember> teamMembers = new List<TeamMember>();
-        string name;
-        string surname;
-        string email;
-        string role;
+        Console.WriteLine($"GetAttendingTeamMember started. ID = {patientClinicalId}");
         try
         {
-            var result = await session.RunAsync(
-                "MATCH(t:TeamMember)-[r:ASSIGNED_TO]->(s:Study) WHERE s.name = $studyName" +
-                "RETURN t.name AS Name, t.surname AS Surname, r.roleInStudy AS Role, t.email AS Email"
-                , new { studyName = study.StudyName });
-            await result.ForEachAsync(record =>
+            string requestUrl = $"team/patient-visit/{patientClinicalId}";
+            HttpResponseMessage responseMessage = await ApiClient.Instance.GetAsync(requestUrl);
+            Console.WriteLine($"Request answer {responseMessage.StatusCode}");
+            if(!responseMessage.IsSuccessStatusCode)
             {
-                name = record["Name"].As<string>();
-                surname = record["Surname"].As<string>();
-                role = record["Role"].As<string>();
-                email = record["Email"].As<string>();
-
-                TeamMember teamMember = new TeamMember(name, surname, email, role);
-                teamMembers.Add(teamMember);
+                Console.WriteLine("Pechalka");
+            }
+           
+            string jsonString = await responseMessage.Content.ReadAsStringAsync();
+           
+            Console.WriteLine($"Recived JSON: {jsonString}");
+            TeamMember? teamMember = JsonSerializer.Deserialize<TeamMember>(jsonString, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
             });
-            return teamMembers;
+            teamMember.Email = patientClinicalId;
+            return teamMember;
+
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
             throw;
         }
+    }
+    
+    public async Task<List<TeamMember>> GetAllStudyTeamMembers(string studyName)
+    {
+         Console.WriteLine($"GetAllyTeamMemeber for {studyName} started");
+                try
+                {
+                    string requestUrl = $"team-by-study/{studyName}";
+        
+                    HttpResponseMessage responseMessage = await ApiClient.Instance.GetAsync(requestUrl);
+        
+                    Console.WriteLine(responseMessage.ToString());
+        
+                    Console.WriteLine($"Request answer {responseMessage.StatusCode}");
+        
+                    if (!responseMessage.IsSuccessStatusCode)
+                    {
+                        Console.WriteLine("No responce");
+                    }
+        
+                    string jsonString = await responseMessage.Content.ReadAsStringAsync();
+        
+                    Console.WriteLine($"JSON responced: {jsonString}");
+        
+                    List<TeamMember>? team = JsonSerializer.Deserialize<List<TeamMember>?>(jsonString, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+        
+                    foreach (var teamMember in team)
+                    {
+                        Console.WriteLine($"email: {teamMember.Email} Surname:  {teamMember.Surname}");
+                    }
+        
+                    return team;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    throw;
+                }
     }
 
     public async Task<bool> IsUserPI(Study study, TeamMember user)

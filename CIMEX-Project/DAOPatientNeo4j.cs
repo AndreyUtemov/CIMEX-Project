@@ -1,4 +1,5 @@
 using System.Net.Http;
+using System.Text;
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Neo4j.Driver;
@@ -113,5 +114,35 @@ public class DAOPatientNeo4j : DAOPatient
     public int DeletePatient(Patient patient)
     {
         throw new NotImplementedException();
+    }
+
+    public async Task<bool> CreateNewVisit(Patient patient, PatientsVisit patientsVisit)
+    {
+        Console.WriteLine("Started CreateNewVisit");
+        try
+        {
+            var payload = new
+            {
+                Patient = patient.PatientHospitalId,
+                Investigator = patientsVisit.AssignedInvestigator.Email,
+                VisitName = patientsVisit.Name,
+                VisitDate = patientsVisit.DateOfVisit.ToString("yyyy-MM-dd")
+            };
+
+            string json = JsonSerializer.Serialize(payload);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            string requestUrl = "patient-visit";
+            HttpResponseMessage response = await ApiClient.Instance.PostAsync(requestUrl, content);
+
+            Console.WriteLine($"Response: {response.StatusCode}");
+
+            return response.IsSuccessStatusCode;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception in CreateTeamMemeber: {ex.Message}");
+            return false;
+        }
     }
 }

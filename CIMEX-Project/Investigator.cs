@@ -2,6 +2,10 @@ namespace CIMEX_Project;
 
 public class Investigator : TeamMember, IInvestigator
 {
+    public Investigator()
+    {
+    }
+
     public Investigator(string name, string surname, string email, string role) : base(name, surname, email, role)
     {
     }

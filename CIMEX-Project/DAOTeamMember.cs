@@ -4,7 +4,7 @@ public interface DAOTeamMember
 
 {
     Task<bool> CheckUserPassword(string eMail, string password);
-    Task<List<TeamMember>> GetAllTeamMembers(Study study);
+    Task<List<TeamMember>> GetAllStudyTeamMembers(string studyName);
 
     Task<bool> IsUserPI(Study study, TeamMember user);
 
