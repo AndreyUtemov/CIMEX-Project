@@ -50,7 +50,7 @@ public class TeamMember : Person
     {
         Console.WriteLine($"GetAllStudyStrarted {eMail}");
         DAOStudyNeo4j daoStudyNeo4J = new DAOStudyNeo4j();
-        List<Study> studies = await daoStudyNeo4J.GetAllStudy(eMail);
+        List<Study> studies = await daoStudyNeo4J.GetAllUsersStudies(eMail);
         foreach (var study in studies)
         {
             Console.WriteLine(study.StudyName);
@@ -72,5 +72,15 @@ public class TeamMember : Person
     public  void SignDocument()
     {
         throw new NotImplementedException();
+    }
+
+    public async Task SendCreationNotice(TeamMember teamMember, string password)
+    {
+        DAOTeamMemeberNeo4j daoTeamMemeberNeo4J = new DAOTeamMemeberNeo4j();
+        string emailText = $"Dear {teamMember.Name} {teamMember.Surname}\n" +
+                           $"You have been successfully registered as a member of the research team in the CIMEX system. Your initial password is: {password}" +
+                           $"This is an automatically generated message from CIMEX. No response is required." +
+                           "Best regards\nThe CIMEX Team";
+        daoTeamMemeberNeo4J.SendReminder(teamMember.Email, "Welcome CIMEX", emailText);
     }
 }

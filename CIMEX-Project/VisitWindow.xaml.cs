@@ -132,9 +132,10 @@ public partial class VisitWindow : Window
         await pdfHandler.PrintVisit(_patientsVisit, _patient);
     }
 
-    private void SendReminder(object sender, RoutedEventArgs e)
+    private async void SendReminder(object sender, RoutedEventArgs e)
     {
-        throw new NotImplementedException();
+        var vistStructure =  _visitsStructure.FirstOrDefault(v => v.Name == _patientsVisit.Name);
+        await _investigator.SendReminder(_investigator, _patient, vistStructure);
     }
 
     private async void ConfirmVisit(object sender, RoutedEventArgs e)

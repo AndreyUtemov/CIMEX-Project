@@ -133,7 +133,7 @@ public class DAOPatientNeo4j : DAOPatient
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
             string requestUrl = "patient-visit";
-            HttpResponseMessage response = await ApiClient.Instance.PostAsync(requestUrl, content);
+            HttpResponseMessage response = await ApiClient.Instance.PatchAsync(requestUrl, content);
 
             Console.WriteLine($"Response: {response.StatusCode}");
 

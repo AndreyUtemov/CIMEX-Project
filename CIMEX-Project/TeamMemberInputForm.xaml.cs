@@ -10,13 +10,15 @@ public partial class TeamMemberInputForm : Window
     public TeamMember Result { get; private set; }
     private ObservableCollection<TeamMember> _teamMembers = new ObservableCollection<TeamMember>();
     private bool _newTeamMember = true;
+    private bool _studyCreation;
     
     public TeamMemberInputForm(bool isAdmin)
     {
      InitializeComponent();
-     
+     _studyCreation = isAdmin;
      if (!isAdmin)
      {
+         
          RoleBox.Visibility = Visibility.Visible;
      }
      CreateListOfTeamMemebers();
@@ -25,19 +27,29 @@ public partial class TeamMemberInputForm : Window
     private async void CreateParticipant(object sender, RoutedEventArgs e)
     {
         if (string.IsNullOrWhiteSpace(EMailBox.Text) || string.IsNullOrWhiteSpace(NameBox.Text) ||
-            string.IsNullOrWhiteSpace(SurnameBox.Text))
+            string.IsNullOrWhiteSpace(SurnameBox.Text) || (RoleBox.SelectedIndex == 0 && !_studyCreation))
         {
             MessageBox.Show("Enter all data", "Missing Information", MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
         else
         {
+            string selectedRole;
+            if (_studyCreation)
+            {
+                 selectedRole = "Medical Doctor";
+            }
+            else
+            {
+                selectedRole = ((ComboBoxItem)RoleBox.SelectedItem).Content.ToString();
+            }
+            
            Result = new TeamMember
            {
                Email = EMailBox.Text,
                Name = NameBox.Text,
                Surname = SurnameBox.Text,
-               Role = "Medical Doctor"
+               Role = selectedRole
            };
            if (_newTeamMember)
            {
@@ -45,6 +57,7 @@ public partial class TeamMemberInputForm : Window
                MessageBox.Show($"Password for TeamMember {Result.Email} created: {password}","Password created", MessageBoxButton.OK);
                DAOTeamMemeberNeo4j daoTeamMember = new DAOTeamMemeberNeo4j();
                bool teamMemberCreated = await  daoTeamMember.CreateTeamMemeber(Result, password);
+               await Result.SendCreationNotice(Result, password);
                if (teamMemberCreated)
                {
                    MessageBox.Show("New team member added", "Team member added", MessageBoxButton.OK);

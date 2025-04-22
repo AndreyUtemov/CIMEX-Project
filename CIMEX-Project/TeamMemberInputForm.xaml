@@ -79,7 +79,7 @@
             <ComboBox x:Name="RoleBox" Visibility="Collapsed" Height="35" FontWeight="Medium" Margin="5"
                       SelectedIndex="-1" BorderThickness="2" BorderBrush="#0E239A">
                 <ComboBoxItem Content="Role in Study" IsEnabled="False" />
-                <ComboBoxItem Content="Investigator" />
+                <ComboBoxItem Content="Medical Doctor" />
                 <ComboBoxItem Content="StudyNurse" />
             </ComboBox>
             <Button Width="160" Height="60" Margin="20" Content="Add Participant" FontSize="20" FontWeight="Bold"

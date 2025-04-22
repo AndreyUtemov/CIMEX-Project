@@ -143,40 +143,14 @@ public class DAOTeamMemeberNeo4j : DAOTeamMember
                 }
     }
 
-    public async Task<bool> IsUserPI(Study study, TeamMember user)
-    {
-        // MATCH (e:Employee)-[c]-(s:Study) WHERE s.name = "ACTIVE" RETURN e
-        await _neo4JClient.Connect();
-        await using var session = _neo4JClient.GetDriver().AsyncSession();
-        bool isPI = false;
-        try
-        {
-            var result = await session.RunAsync("MATCH (t:TeamMember)-[r:ASSIGNED_TO]->(s:Study) WHERE  t.email = $userEmail " +
-                                                "AND s.name = $studyName RETURN  r.isPrincipal AS isUserPI", 
-                                                new {userEmail = user.Email, studyName = study.StudyName});
-            await result.ForEachAsync(record =>
-            {
-                isPI = record["isUserPI"].As<bool>();
-                
-                
-            });
-            return isPI;
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
-    }
-
-
+    
     public async Task<bool> CreateTeamMemeber(TeamMember teamMember, string password)
     {
         Console.WriteLine("Started CreateTeamMemeber");
         try
         {
             Console.WriteLine($"name {teamMember.Name} surname {teamMember.Surname} email {teamMember.Email} role {teamMember.Role} password {password}");
-            // Создаём объект для API, который включает пароль
+         
             var payload = new
             {
                 Name = teamMember.Name,
@@ -203,7 +177,36 @@ public class DAOTeamMemeberNeo4j : DAOTeamMember
         }
     }
 
+    public async Task<bool> SendReminder(string investigatorEmail, string subject, string textOfEmail)
+    {
+        Console.WriteLine("Started CreateTeamMemeber");
+        try
+        {
+           
+            var payload = new
+            {
+                
+                Email = investigatorEmail,
+                Subject = subject,
+                Content = textOfEmail
+            };
 
+            string json = JsonSerializer.Serialize(payload);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            string requestUrl = "email";
+            HttpResponseMessage response = await ApiClient.Instance.PostAsync(requestUrl, content);
+
+            Console.WriteLine($"Response: {response.StatusCode}");
+
+            return response.IsSuccessStatusCode;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception in CreateTeamMemeber: {ex.Message}");
+            return false;
+        }
+    }
 
     public void SetInvestigator(Investigator investigator)
     {
@@ -223,4 +226,6 @@ public class DAOTeamMemeberNeo4j : DAOTeamMember
         public string Role { get; set; }
         public string Password { get; set; }
     }
-}
+
+   
+ }

@@ -10,7 +10,7 @@ public partial class VisitAddition : Window
     
     public StructureOfVisit Result { get; set; }
 
-    public VisitAddition()
+    public VisitAddition(int visitNummer)
     {
         InitializeComponent();
        Tasks = new ObservableCollection<string>();

@@ -19,7 +19,7 @@ public class DAOStudyNeo4j : DAOStudy
     {
     }
 
-    public async Task<List<Study>> GetAllStudy(string eMail)
+    public async Task<List<Study>> GetAllUsersStudies(string eMail)
     {
         Console.WriteLine($"We are here with {eMail}");
         try

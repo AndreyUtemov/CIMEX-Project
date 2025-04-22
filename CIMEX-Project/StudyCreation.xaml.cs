@@ -41,7 +41,7 @@ public partial class StudyCreation : Window
             {
                 MessageBox.Show($"Study {study.StudyName} created");
             }
-
+_principalInvestigator.SendAppointment(_principalInvestigator, study);
             this.DialogResult = true;
             this.Close();
         }
@@ -64,7 +64,7 @@ public partial class StudyCreation : Window
 
     private void AddVisit(object sender, RoutedEventArgs e)
     {
-        var form = new VisitAddition();
+        var form = new VisitAddition(VisitNames.Count());
         if (form.ShowDialog() == true)
         {
             _visits.Add(form.Result);
