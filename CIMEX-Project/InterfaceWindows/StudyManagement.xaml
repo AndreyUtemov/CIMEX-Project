@@ -1,0 +1,41 @@
+<Window x:Class="CIMEX_Project.StudyManagement"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:local="clr-namespace:CIMEX_Project"
+        xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+        mc:Ignorable="d"
+        Title="StudyManagement" Height="1000" Width="800"
+        Icon="pack://application:,,,/InterfaceWindows/Logo.png">
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="150"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Image Grid.Row="0" Height="90" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10" Source="Logo.png"></Image>
+        <TextBlock Grid.Row="0" HorizontalAlignment="Right" TextAlignment="Center" Margin="10" FontSize="22" Foreground="#0E239A" FontWeight="Bold"  Text="{Binding StudyTitle}" ></TextBlock>
+        <ListView Grid.Row="1" x:Name="TeamMembersList">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="TeamMember" Width="300" DisplayMemberBinding="{Binding TeamMember}"/>
+                    <GridViewColumn Header="E-mail" Width="160" DisplayMemberBinding="{Binding Email}"/>
+                    <GridViewColumn Header="Role" Width="180" DisplayMemberBinding="{Binding Role}"/>
+                    <GridViewColumn Header="Withdraw" Width="90"><GridViewColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Content="Удалить" Click="WithdrawButtonClick" Tag="{Binding Email}"/>
+                        </DataTemplate>
+                    </GridViewColumn.CellTemplate></GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <StackPanel Grid.Row="2" Margin="10,10,10,40">
+            
+            <Button Width="160" Height="60" Margin="20" Content="Add Participant" FontSize="20" FontWeight="Bold"
+                    Foreground="#FAFAFA" Background="#01B0FF" BorderThickness="0" ClickMode="Press" Click="CreateParticipant">
+            </Button>
+        </StackPanel>
+    </Grid>
+</Window>

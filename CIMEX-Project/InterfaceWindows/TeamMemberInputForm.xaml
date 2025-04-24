@@ -1,0 +1,91 @@
+<Window x:Class="CIMEX_Project.TeamMemberInputForm"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:local="clr-namespace:CIMEX_Project"
+        mc:Ignorable="d"
+        Title="TeamMemberInputForm" Height="900" Width="1000"
+        Icon="pack://application:,,,/InterfaceWindows/Logo.png">
+    <Window.Resources>
+        <Style TargetType="Label">
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Foreground" Value="#0E239A" />
+            <Setter Property="FontSize" Value="18" />
+            <Setter Property="Margin" Value="7" />
+            <Setter Property="HorizontalAlignment" Value="Left"></Setter>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="120" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="150" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Image Grid.Row="0" Grid.Column="0" Height="90" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10"
+               Source="Logo.png">
+        </Image>
+        <TextBlock Grid.Row="0" Grid.Column="1" TextAlignment="Center" VerticalAlignment="Center" Margin="10"
+                   FontSize="24" Foreground="#0E239A" FontWeight="Bold">
+            Add new participant
+        </TextBlock>
+
+        <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="10,10,10,40">
+            <ListView x:Name="TeamMembersList">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="Surname" Width="250" DisplayMemberBinding="{Binding Surname}" />
+                        <GridViewColumn Header="Name" Width="250" DisplayMemberBinding="{Binding Name}" />
+                        <GridViewColumn Header="E-mail" Width="200" DisplayMemberBinding="{Binding Email}" />
+                        <GridViewColumn Header="Add" Width="auto">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Content="Add" Click="AddButtonClick" Width="60" Height="30"
+                                            Foreground="#FAFAFA" Background="#01B0FF" Tag="{Binding }" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+            <Grid Margin="10" HorizontalAlignment="Stretch" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="120"/> 
+                    <ColumnDefinition Width="*"/> 
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <Label Grid.Row="0" Grid.Column="0" Content="E-mail:" Target="{Binding ElementName=EMailBox}" />
+                <TextBox Grid.Row="0" Grid.Column="1" x:Name="EMailBox" FontWeight="Medium" Margin="5"
+                         BorderThickness="2" BorderBrush="#0E239A"/>
+
+                <Label Grid.Row="1" Grid.Column="0" Content="Surname:" Target="{Binding ElementName=SurnameBox}" />
+                <TextBox Grid.Row="1" Grid.Column="1" x:Name="SurnameBox" FontWeight="Medium" Margin="5"
+                         BorderThickness="2" BorderBrush="#0E239A"/>
+
+                <Label Grid.Row="2" Grid.Column="0" Content="Name:" Target="{Binding ElementName=NameBox}" />
+                <TextBox Grid.Row="2" Grid.Column="1" x:Name="NameBox" FontWeight="Medium" Margin="5"
+                         BorderThickness="2" BorderBrush="#0E239A" />
+            </Grid>
+            <ComboBox x:Name="RoleBox" Visibility="Collapsed" Height="35" FontWeight="Medium" Margin="5"
+                      SelectedIndex="-1" BorderThickness="2" BorderBrush="#0E239A">
+                <ComboBoxItem Content="Role in Study" IsEnabled="False" />
+                <ComboBoxItem Content="Medical Doctor" />
+                <ComboBoxItem Content="StudyNurse" />
+            </ComboBox>
+            <Button Width="160" Height="60" Margin="20" Content="Add Participant" FontSize="20" FontWeight="Bold"
+                    Foreground="#FAFAFA" Background="#01B0FF" BorderThickness="0" ClickMode="Press"
+                    Click="CreateParticipant">
+            </Button>
+        </StackPanel>
+    </Grid>
+</Window>
