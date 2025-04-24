@@ -15,69 +15,58 @@ public class DaoVisitMongoDb
         Console.WriteLine("Start GetPatientVisits");
         try
         {
-            // Формируем URL для запроса
             string requestUrl = $"patient-visits/{patientId}";
-
-            // Выполняем запрос через ApiClient
+            
             HttpResponseMessage response = await ApiClient.Instance.GetAsync(requestUrl);
 
-            // Логируем ответ
+          
             Console.WriteLine($"Mongo response: {response.StatusCode}");
-
-            // Проверка, успешен ли запрос
+           
             if (!response.IsSuccessStatusCode)
             {
                 Console.WriteLine($"API request failed with status code: {response.StatusCode}");
-                return new List<PatientsVisit>(); // Возвращаем пустой список в случае ошибки
+                return new List<PatientsVisit>(); 
             }
-
-            // Чтение и десериализация ответа
+            
             string jsonString = await response.Content.ReadAsStringAsync();
-
-            // Если ответ пустой, возвращаем пустой список
+            
             if (string.IsNullOrEmpty(jsonString))
             {
                 Console.WriteLine("API returned an empty response.");
                 return new List<PatientsVisit>();
             }
 
-            // Десериализация JSON в объект
             PatientVisitResponse patientVisitResponse = JsonSerializer.Deserialize<PatientVisitResponse>(jsonString,
                 new JsonSerializerOptions
                 {
-                    PropertyNameCaseInsensitive = true, // Игнорирование регистра в именах свойств
-                    AllowTrailingCommas = true // Допускаем запятые в конце JSON
+                    PropertyNameCaseInsensitive = true, 
+                    AllowTrailingCommas = true 
                 });
 
-            // Проверка, есть ли визиты в ответе
+           
             if (patientVisitResponse?.Visits == null || patientVisitResponse.Visits.Count == 0)
             {
                 Console.WriteLine("No visits found in API response.");
                 return new List<PatientsVisit>();
             }
-
-            // Преобразование списка визитов в объект PatientsVisit
             return patientVisitResponse.Visits.ConvertAll(visitData => new PatientsVisit(
-                visitData.Name ?? "Не указано", // Используем дефолтное значение, если имя визита пустое
+                visitData.Name ?? "Не указано", 
                 DateTime.TryParse(visitData.DateOfVisit, out DateTime date)
                     ? date
-                    : DateTime.MinValue // Преобразование даты
+                    : DateTime.MinValue 
             ));
         }
         catch (HttpRequestException ex)
         {
-            // Ошибка при запросе к API (например, если сервер не доступен)
-            throw new InvalidOperationException($"Ошибка при запросе к API: {ex.Message}", ex);
+            throw new InvalidOperationException($"Error while requesting API: {ex.Message}", ex);
         }
         catch (JsonException ex)
         {
-            // Ошибка при десериализации (если структура JSON не соответствует ожидаемой)
-            throw new InvalidOperationException($"Ошибка десериализации ответа API: {ex.Message}", ex);
+            throw new InvalidOperationException($"Error deserializing API response: {ex.Message}", ex);
         }
         catch (Exception ex)
         {
-            // Обработка других ошибок
-            throw new InvalidOperationException($"Неизвестная ошибка при получении визитов: {ex.Message}", ex);
+            throw new InvalidOperationException($"Unknown error while receiving visits: {ex.Message}", ex);
         }
     }
 
@@ -127,17 +116,17 @@ public class DaoVisitMongoDb
         catch (HttpRequestException ex)
         {
             // Ошибка при запросе к API (например, если сервер не доступен)
-            throw new InvalidOperationException($"Ошибка при запросе к API: {ex.Message}", ex);
+            throw new InvalidOperationException($"Error while requesting API: {ex.Message}", ex);
         }
         catch (JsonException ex)
         {
             // Ошибка при десериализации (если структура JSON не соответствует ожидаемой)
-            throw new InvalidOperationException($"Ошибка десериализации ответа API: {ex.Message}", ex);
+            throw new InvalidOperationException($"Error deserializing API response: {ex.Message}", ex);
         }
         catch (Exception ex)
         {
-            // Обработка других ошибок
-            throw new InvalidOperationException($"Неизвестная ошибка при получении визитов: {ex.Message}", ex);
+           
+            throw new InvalidOperationException($"Unknown error while retrieving tasks: {ex.Message}", ex);
         }
     }
 
@@ -147,7 +136,7 @@ public class DaoVisitMongoDb
 
         try
         {
-            // Формируем URL с query-параметрами
+           
             string requestUrl =
                 $"study-visits/tasks?studyTitle={Uri.EscapeDataString(studyName)}&visitName={Uri.EscapeDataString(visitName)}";
             HttpResponseMessage response = await ApiClient.Instance.GetAsync(requestUrl);
@@ -156,7 +145,7 @@ public class DaoVisitMongoDb
             if (!response.IsSuccessStatusCode)
             {
                 Console.WriteLine($"API request failed with status code: {response.StatusCode}");
-                return new List<string>(); // Возвращаем пустой список при ошибке
+                return new List<string>(); 
             }
 
             string jsonString = await response.Content.ReadAsStringAsync();
@@ -166,7 +155,6 @@ public class DaoVisitMongoDb
                 return new List<string>();
             }
 
-            // Десериализуем ответ как List<string>
             List<string> tasks = JsonSerializer.Deserialize<List<string>>(jsonString,
                 new JsonSerializerOptions
                 {
@@ -184,15 +172,15 @@ public class DaoVisitMongoDb
         }
         catch (HttpRequestException ex)
         {
-            throw new InvalidOperationException($"Ошибка при запросе к API: {ex.Message}", ex);
+            throw new InvalidOperationException($"Error while requesting API:: {ex.Message}", ex);
         }
         catch (JsonException ex)
         {
-            throw new InvalidOperationException($"Ошибка десериализации ответа API: {ex.Message}", ex);
+            throw new InvalidOperationException($"Error deserializing API response: {ex.Message}", ex);
         }
         catch (Exception ex)
         {
-            throw new InvalidOperationException($"Неизвестная ошибка при получении задач: {ex.Message}", ex);
+            throw new InvalidOperationException($"Unknown error while retrieving tasks:: {ex.Message}", ex);
         }
     }
 
@@ -201,7 +189,7 @@ public class DaoVisitMongoDb
         Console.WriteLine("Started Create Study Mongo");
         try
         {
-            // Создаём список посещений (visits) динамически из объекта Study
+          
             var visits = new List<BsonVisit>();
 
             foreach (var visit in study.VisitsStructure)
@@ -217,7 +205,7 @@ public class DaoVisitMongoDb
                 visits.Add(bsonVisit);
             }
 
-            // Создаём объект BsonStudy
+            
             var studyPayload = new BsonStudy
             {
                 Title = study.StudyName,
@@ -225,11 +213,11 @@ public class DaoVisitMongoDb
                 Visits = visits
             };
 
-            // Сериализация объекта studyPayload в JSON
+           
             string json = JsonSerializer.Serialize(studyPayload);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            // Отправка POST-запроса
+          
             string requestUrl = "study-visits";
             HttpResponseMessage response = await ApiClient.Instance.PostAsync(requestUrl, content);
 
